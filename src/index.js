@@ -1,6 +1,14 @@
-import React from 'react'
-import styles from './styles.module.css'
+import React from 'react';
+import styles from './styles.module.css';
+import cname from 'classnames';
+console.log('helo')
 
 export const ExampleComponent = ({ text }) => {
-  return <div className={styles.test}>Example Component: {text}</div>
+	const className = cname(styles.test);
+
+	return (
+		<div className={className}>
+			Example Component: {text}
+		</div>
+	);
 }
