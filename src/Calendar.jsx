@@ -12,7 +12,7 @@ import {
 	addMonths,
 	subMonths,
 	checkEqual,
-} from '../helpers/date-utils';
+} from './helpers/date-utils';
 
 class Calendar extends Component {
 	static propTypes = {

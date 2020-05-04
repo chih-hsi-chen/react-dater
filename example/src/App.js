@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { ExampleComponent } from 'react-dater'
-import 'react-dater/dist/index.css'
+import DatePicker from 'react-dater';
+import 'react-dater/dist/index.css';
 
 const App = () => {
-  return <ExampleComponent text="Create React Library Example 😄" />
+  return <DatePicker  />
 }
 
 export default App

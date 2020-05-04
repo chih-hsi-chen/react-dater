@@ -7,13 +7,13 @@
   "repository": "chih-hsi-chen/react-dater",
   "main": "dist/index.js",
   "module": "dist/index.modern.js",
-  "source": "src/index.js",
+  "source": "src/index.jsx",
   "engines": {
     "node": ">=10"
   },
   "scripts": {
     "build": "microbundle-crl --no-compress --format modern,cjs",
-    "start": "microbundle-crl watch --no-compress --format modern,cjs",
+    "start": "microbundle-crl watch --css-modules \"[local]\" --no-compress --format modern,cjs",
     "prepublish": "run-s build",
     "test": "run-s test:unit test:lint test:build",
     "test:build": "run-s build",
@@ -24,12 +24,15 @@
     "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
-    "react": "^16.0.0"
+    "react": "^16.0.0",
+    "react-dom": "16.13.1"
   },
   "devDependencies": {
+    "@popperjs/core": "^2.4.0",
     "babel-eslint": "^10.0.3",
     "classnames": "^2.2.6",
     "cross-env": "^7.0.2",
+    "date-fns": "^2.12.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.7.0",
     "eslint-config-standard": "^14.1.0",
@@ -46,6 +49,8 @@
     "prettier": "^2.0.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-onclickoutside": "^6.9.0",
+    "react-popper": "^2.2.3",
     "react-scripts": "^3.4.1"
   },
   "files": [

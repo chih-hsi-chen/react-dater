@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Day from './Day';
-import { getFirstWeekDay, addDays } from '../helpers/date-utils';
+import { getFirstWeekDay, addDays } from './helpers/date-utils';
 
 const WEEK_OFFSET = [0, 1, 2, 3, 4, 5, 6];
 

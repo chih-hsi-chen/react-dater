@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Week from './Week';
-import { getFirstWeekDay, getFirstMonthDay, addWeeks } from '../helpers/date-utils';
+import { getFirstWeekDay, getFirstMonthDay, addWeeks } from './helpers/date-utils';
 
 // basically, show 6 weeks in month
 const FIXED_HEIGHT_WEEK_COUNT = 6;
