@@ -13,14 +13,14 @@ npm install --save react-dater
 ## Usage
 
 ```jsx
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import MyComponent from 'react-dater'
-import 'react-dater/dist/index.css'
+import DatePicker from 'react-dater';
+import 'react-dater/dist/index.css';
 
 class Example extends Component {
   render() {
-    return <MyComponent />
+    return <DatePicker />
   }
 }
 ```

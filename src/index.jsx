@@ -6,19 +6,20 @@ import Calendar from './Calendar';
 import PopperComponent from "./PopperComponent";
 import ContextProvider from './helpers/ContextConfig';
 import { parseDate, newDate, formatDate } from "./helpers/date-utils";
-import './stylesheets/DatePicker.css';
 
 const WrappedCalendar = onClickOutside(Calendar);
+
+export { addLocale, registerDefaultLocale } from './helpers/date-utils';
 
 export default class DatePicker extends React.Component {
 	static propTypes = {
 		customClassName: PropTypes.string,
 		dateFormatCalendar: PropTypes.string,
 		dateFormatInput: PropTypes.string,
+		locale: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 		disabled: PropTypes.bool,
 		readOnly: PropTypes.bool,
 		inputElement: PropTypes.element,
-		inputRef: PropTypes.string,
 		onChange: PropTypes.func,
 
 		selected: PropTypes.instanceOf(Date),
@@ -145,7 +146,6 @@ export default class DatePicker extends React.Component {
 	}
 	renderDateInput = () => {
 		const InputElemToRender = this.props.inputElement || <input type='text' />;
-		const InputElemRef = this.props.inputRef || 'ref';
 		const inputValue = typeof this.state.inputValue === 'string'
 						   ? this.state.inputValue
 						   : formatDate(this.state.selectedDate, this.props.dateFormatInput);
@@ -153,7 +153,7 @@ export default class DatePicker extends React.Component {
 		const InputClassName = cname(this.props.customClassName, InputElemToRender.props.className);
 
 		return React.cloneElement(InputElemToRender, {
-			[InputElemRef]: (input) => this.input = input,
+			ref: (input) => this.input = input,
 			value: inputValue,
 			onChange: this.handleInputChange,
 			onFocus: this.handleFocus,
@@ -171,6 +171,7 @@ export default class DatePicker extends React.Component {
 		
 		return (
 			<ContextProvider
+				locale = {this.props.locale}
 				selected = {this.state.selectedDate}
 				viewed = {this.state.viewDate}
 				onDaySelect = {this.handleSelect}

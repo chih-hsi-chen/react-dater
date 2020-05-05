@@ -13,6 +13,7 @@ import {
 	subMonths,
 	checkEqual,
 } from './helpers/date-utils';
+import { RDXContext } from './helpers/ContextConfig';
 
 class Calendar extends Component {
 	static propTypes = {
@@ -65,20 +66,23 @@ class Calendar extends Component {
 	}
 
 	renderCurrentMonth = (date = this.state.date) => {
+		const { locale } = this.context;
+
 		return (
 			<div className={cname('rdx__current-month')}>
-				{formatDate(date, this.props.dateFormat)}
+				{formatDate(date, this.props.dateFormat, locale)}
 			</div>
 		);
 	}
 	renderWeekdayHeader = (date = this.state.date) => {
-		const startDay_of_week = getFirstWeekDay(date);
+		const { locale } = this.context;
+		const startDay_of_week = getFirstWeekDay(date, locale);
 		const weekdayNames = [];
 
 		return weekdayNames.concat(
 			[0, 1, 2, 3, 4, 5, 6].map(offset => {
 				const day = addDays(startDay_of_week, offset);
-				const weekdayName = getWeekdayNameInLocale(day);
+				const weekdayName = getWeekdayNameInLocale(day, locale);
 
 				return (
 					<div
@@ -158,5 +162,6 @@ class Calendar extends Component {
 		);
 	}
 }
+Calendar.contextType = RDXContext;
 
 export default Calendar;

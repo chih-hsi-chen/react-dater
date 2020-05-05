@@ -12,12 +12,14 @@ import {
     isValid,
     getDate,
     isSameDay,
-    isSameMonth,
+    isSameMonth
 } from 'date-fns';
 
-import { /* enUS, enGB, */ zhTW } from "date-fns/locale";
+import { enUS, enGB, zhTW } from "date-fns/locale";
 
-const defaultLocaleObj = zhTW;
+const defaultLocaleObj = enUS;
+
+const getScope = () => { return typeof window !== 'undefined' ? window : global; }
 
 export const newDate = (initialValue) => {
     const date = initialValue ?
@@ -54,19 +56,47 @@ export const getFirstMonthDay = (monthDate) => {
     return startOfMonth(monthDate);
 }
 
+/**
+ * 
+ * @param {String} localeName - locale key
+ * @param {Locale} localeObj - locale object
+ */
+export const addLocale = (localeName, localeObj) => {
+    const scope = getScope();
+
+    if(!scope.__localeData__)
+        scope.__localeData__ = {};
+
+    scope.__localeData__[localeName] = localeObj;
+}
+
 export const getLocaleObject = (localeInfo) => {
     if(!localeInfo) {
-        return defaultLocaleObj;
+        return getDefaultLocale();
     }
     if (typeof localeInfo === 'string') {
-        const scope = typeof window !== 'undefined' ? window : global;
+        const scope = getScope();
 
         // default is en-US
-        return scope.__localeData__ ? scope.__localeData__[localeInfo] : defaultLocaleObj;
+        return scope.__localeData__ && scope.__localeData__[localeInfo]
+                ? scope.__localeData__[localeInfo]
+                : getDefaultLocale();
     }
 
     // We assume it is a raw date-fns Locale object
     return localeInfo;
+}
+
+export const getDefaultLocale = () => {
+    const scope = getScope();
+    
+    // if users define their own default, just use it; otherwise, we give en-US as default locale
+    return scope.__default_locale__ || defaultLocaleObj;
+}
+export const registerDefaultLocale = (localeObj) => {
+    const scope = getScope();
+
+    scope.__default_locale__ = localeObj;
 }
 
 export const getWeekdayNameInLocale = (date, locale) => {
