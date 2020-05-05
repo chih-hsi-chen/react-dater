@@ -6,6 +6,7 @@ import Calendar from './Calendar';
 import PopperComponent from "./PopperComponent";
 import ContextProvider from './helpers/ContextConfig';
 import { parseDate, newDate, formatDate } from "./helpers/date-utils";
+import './stylesheets/DatePicker.css';
 
 const WrappedCalendar = onClickOutside(Calendar);
 
