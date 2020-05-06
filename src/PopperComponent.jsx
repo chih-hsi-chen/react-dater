@@ -31,30 +31,47 @@ const PopperComponent = (props) => {
 				options: {
 					offset: [0, 10]
 				}
-			}
+			},
 		],
-		placement: popperPlacement
+		placement: popperPlacement,
 	});
 
 	let popper = null;
 
-	if(!hidePopper) {
-		popper = (
-			<div
-				className = {cname('rdx__popper')}
-				ref = {setPopperElement}
-				style={styles.popper}
-				{...attributes.popper}
-			>
-				{ React.cloneElement(popperComponent, {},
-					<div
-						className = 'rdx__arrow'
-						ref={setArrowElement}
-					/>
-				) }
-			</div>
-		);
-	}
+	// if(!hidePopper) {
+	// 	popper = (
+	// 		<div
+	// 			className = {cname('rdx__popper')}
+	// 			ref = {setPopperElement}
+	// 			style={styles.popper}
+	// 			{...attributes.popper}
+	// 			data-popper-reference-hidden = {hidePopper}
+	// 		>
+	// 			{ React.cloneElement(popperComponent, {},
+	// 				<div
+	// 					className = 'rdx__arrow'
+	// 					ref={setArrowElement}
+	// 				/>
+	// 			) }
+	// 		</div>
+	// 	);
+	// }
+	popper = (
+		<div
+			className = {cname('rdx__popper')}
+			ref = {setPopperElement}
+			style={styles.popper}
+			{...attributes.popper}
+			data-popper-reference-hidden = {hidePopper}
+		>
+			{ React.cloneElement(popperComponent, {},
+				<div
+					className = 'rdx__arrow'
+					ref={setArrowElement}
+				/>
+			) }
+		</div>
+	);
 	
 	return (
 		<React.Fragment>

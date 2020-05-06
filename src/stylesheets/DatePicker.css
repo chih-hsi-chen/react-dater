@@ -94,6 +94,11 @@
 	border-left-color: #fff;
 }
 
+.rdx__popper[data-popper-reference-hidden="true"] {
+    visibility: hidden;
+    pointer-events: none;
+}
+
 /* Popper Arrow */
 .rdx__popper[data-popper-placement^="bottom"] .rdx__arrow,
 .rdx__popper[data-popper-placement^="top"] .rdx__arrow,
