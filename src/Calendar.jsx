@@ -61,6 +61,7 @@ class Calendar extends Component {
 			</div>
 		);
 	};
+
 	renderWeekdayHeader = (date = this.state.date) => {
 		const { locale } = this.context;
 		const startDayOfWeek = getFirstWeekDay(date, locale);
@@ -79,6 +80,7 @@ class Calendar extends Component {
 			})
 		);
 	};
+
 	renderHeader = ({ monthDate }) => {
 		return (
 			<div className='rdx__header'>
@@ -89,6 +91,7 @@ class Calendar extends Component {
 			</div>
 		);
 	};
+
 	renderMonths = () => {
 		const monthDate = this.getDateInView();
 		const monthKey = `month-${0}`;
@@ -116,6 +119,7 @@ class Calendar extends Component {
 			</button>
 		);
 	};
+
 	renderNextButton = () => {
 		return (
 			<button

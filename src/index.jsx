@@ -53,6 +53,7 @@ export default class DatePicker extends React.Component {
 	isCalendarOpen = () => {
 		return this.state.open && !this.props.disabled && !this.props.readOnly;
 	};
+
 	/**
 	 * @param {Boolean} nextOpenState - next calendar popper open state
 	 * @param {Boolean} isResetView - if true, represent there is no selection happend
@@ -70,6 +71,7 @@ export default class DatePicker extends React.Component {
 			};
 		});
 	};
+
 	/**
 	 * @description update selected date and view date in calendar
 	 * @param {Date} date - selected date from calendar or input field
@@ -86,6 +88,7 @@ export default class DatePicker extends React.Component {
 		// call the callback function which is from parent element
 		this.props.onChange(date, event);
 	};
+
 	setViewDate = (date) => {
 		this.setState({
 			viewDate: date
@@ -95,6 +98,7 @@ export default class DatePicker extends React.Component {
 	handleInputClick = () => {
 		if (!this.props.disabled && !this.props.readOnly) this.setOpen(true);
 	};
+
 	handleFocus = (e) => {
 		if (!this.state.open) this.setOpen(true);
 
@@ -102,9 +106,11 @@ export default class DatePicker extends React.Component {
 		// 	focused: true
 		// });
 	};
+
 	handleBlur = () => {
 		// this.setState({ focused: false });
 	};
+
 	// text input change
 	handleInputChange = (...args) => {
 		const event = args[0];
@@ -119,11 +125,13 @@ export default class DatePicker extends React.Component {
 
 		if (parsedDate) this.setSelected(parsedDate, event, true);
 	};
+
 	handleSelect = (date, event) => {
 		this.setSelected(date, event, false);
 
 		this.setOpen(false, false);
 	};
+
 	handleCalendarClickOutside = (e) => {
 		if (e.target !== this.input) this.setOpen(false, true);
 	};
@@ -139,6 +147,7 @@ export default class DatePicker extends React.Component {
 			/>
 		);
 	};
+
 	renderDateInput = () => {
 		const InputElemToRender = this.props.inputElement || (
 			<input type='text' />

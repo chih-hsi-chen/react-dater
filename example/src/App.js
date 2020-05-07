@@ -1,16 +1,11 @@
-import React from 'react'
+import React from 'react';
 import DatePicker from 'react-dater';
 import 'react-dater/dist/index.css';
 
 const MyInput = React.forwardRef((props, ref) => {
-
 	return (
 		<div>
-			<input
-				type='text'
-				ref={ref}
-				{...props}
-			/>
+			<input type='text' ref={ref} {...props} />
 		</div>
 	);
 });
@@ -22,7 +17,7 @@ const App = () => {
 			inputElement={<MyInput />}
 			placeholderText='select a date'
 		/>
-	)
-}
+	);
+};
 
-export default App
+export default App;

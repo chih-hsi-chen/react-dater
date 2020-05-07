@@ -12,17 +12,22 @@
 		"node": ">=10"
 	},
 	"scripts": {
-		"clean": "rm -rf dist/",
-		"build": "microbundle-crl --css-modules \"[local]\" --compress --no-sourcemap --format modern,cjs",
-		"start": "microbundle-crl watch --css-modules \"[local]\" --no-compress --format modern,cjs",
-		"prepublish": "run-s clean build",
-		"test": "run-s test:unit test:lint test:build",
+		"build": "rm -rf dist/ && microbundle-crl --css-modules \"[local]\" --compress --no-sourcemap --format modern,cjs",
+		"start": "rm -rf dist/ && microbundle-crl watch --css-modules \"[local]\" --no-compress --format modern,cjs",
+		"prepublish": "run-s build",
+		"test": "run-s test:prettier test:lint test:build",
 		"test:build": "run-s build",
+		"test:prettier": "prettier --write \"./**/*.{js,jsx,json}\"",
 		"test:lint": "eslint src/*",
 		"test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
 		"test:watch": "react-scripts test --env=jsdom",
 		"predeploy": "cd example && npm install && npm run build",
 		"deploy": "gh-pages -d example/build"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "npm test"
+		}
 	},
 	"peerDependencies": {
 		"react": ">=16.3",
@@ -50,6 +55,7 @@
 		"eslint-plugin-react": "^7.17.0",
 		"eslint-plugin-standard": "^4.0.1",
 		"gh-pages": "^2.2.0",
+		"husky": "^4.2.5",
 		"microbundle-crl": "^0.13.10",
 		"npm-run-all": "^4.1.5",
 		"prettier": "^2.0.4",
