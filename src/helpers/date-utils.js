@@ -1,107 +1,109 @@
 import {
-    format,
-    startOfWeek,
-    startOfMonth,
-    addDays,
-    addWeeks,
-    addMonths,
-    subMonths,
-    parse,
-    parseISO,
-    toDate,
-    isValid,
-    getDate,
-    isSameDay,
-    isSameMonth
+	format,
+	startOfWeek,
+	startOfMonth,
+	addDays,
+	addWeeks,
+	addMonths,
+	subMonths,
+	parse,
+	parseISO,
+	toDate,
+	isValid,
+	getDate,
+	isSameDay,
+	isSameMonth
 } from 'date-fns';
 
-import { enUS, enGB, zhTW } from "date-fns/locale";
+import { enUS } from 'date-fns/locale';
 
-const defaultLocaleObj = enUS;
-
-const getScope = () => { return typeof window !== 'undefined' ? window : global; }
+const getScope = () => {
+	return typeof window !== 'undefined' ? window : global;
+};
 
 export const newDate = (initialValue) => {
-    const date = initialValue ?
-        typeof initialValue === 'string' || initialValue instanceof String
-            ? parseISO(initialValue) : toDate(initialValue)
-        : new Date();
+	const date = initialValue
+		? typeof initialValue === 'string' || initialValue instanceof String
+			? parseISO(initialValue)
+			: toDate(initialValue)
+		: new Date();
 
-    return isValid(date) ? date : new Date();
-}
+	return isValid(date) ? date : new Date();
+};
 
 export const formatDate = (date, formatStr = 'yyyy-MM-dd', locale) => {
-    const LocaleObj = getLocaleObject(locale);
+	const LocaleObj = getLocaleObject(locale);
 
-    return format(date, formatStr, {
-        locale: LocaleObj,
-    });
-}
+	return format(date, formatStr, {
+		locale: LocaleObj
+	});
+};
 
 export const parseDate = (value, dateFormat, locale) => {
-    const LocaleObj = getLocaleObject(locale);
-    const parsedDate = parse(value, dateFormat, new Date(), { locale: LocaleObj });
+	const LocaleObj = getLocaleObject(locale);
+	const parsedDate = parse(value, dateFormat, new Date(), {
+		locale: LocaleObj
+	});
 
-    return isValid(parsedDate) && parsedDate;
+	return isValid(parsedDate) && parsedDate;
 };
 
 export const getFirstWeekDay = (weekDate, locale) => {
-    const LocaleObj = getLocaleObject(locale);
-    return startOfWeek(weekDate, {
-        locale: LocaleObj
-    });
-}
+	const LocaleObj = getLocaleObject(locale);
+	return startOfWeek(weekDate, {
+		locale: LocaleObj
+	});
+};
 
 export const getFirstMonthDay = (monthDate) => {
-    return startOfMonth(monthDate);
-}
+	return startOfMonth(monthDate);
+};
 
 /**
- * 
+ *
  * @param {String} localeName - locale key
  * @param {Locale} localeObj - locale object
  */
 export const addLocale = (localeName, localeObj) => {
-    const scope = getScope();
+	const scope = getScope();
 
-    if(!scope.__localeData__)
-        scope.__localeData__ = {};
+	if (!scope.__localeData__) scope.__localeData__ = {};
 
-    scope.__localeData__[localeName] = localeObj;
-}
+	scope.__localeData__[localeName] = localeObj;
+};
 
 export const getLocaleObject = (localeInfo) => {
-    if(!localeInfo) {
-        return getDefaultLocale();
-    }
-    if (typeof localeInfo === 'string') {
-        const scope = getScope();
+	if (!localeInfo) {
+		return getDefaultLocale();
+	}
+	if (typeof localeInfo === 'string') {
+		const scope = getScope();
 
-        // default is en-US
-        return scope.__localeData__ && scope.__localeData__[localeInfo]
-                ? scope.__localeData__[localeInfo]
-                : getDefaultLocale();
-    }
+		// default is en-US
+		return scope.__localeData__ && scope.__localeData__[localeInfo]
+			? scope.__localeData__[localeInfo]
+			: getDefaultLocale();
+	}
 
-    // We assume it is a raw date-fns Locale object
-    return localeInfo;
-}
+	// We assume it is a raw date-fns Locale object
+	return localeInfo;
+};
 
 export const getDefaultLocale = () => {
-    const scope = getScope();
-    
-    // if users define their own default, just use it; otherwise, we give en-US as default locale
-    return scope.__default_locale__ || defaultLocaleObj;
-}
-export const registerDefaultLocale = (localeObj) => {
-    const scope = getScope();
+	const scope = getScope();
 
-    scope.__default_locale__ = localeObj;
-}
+	// if users define their own default, just use it; otherwise, we give en-US as default locale
+	return scope.__default_locale__ || enUS;
+};
+export const registerDefaultLocale = (localeObj) => {
+	const scope = getScope();
+
+	scope.__default_locale__ = localeObj;
+};
 
 export const getWeekdayNameInLocale = (date, locale) => {
-    return formatDate(date, 'EEEEEE', locale);
-}
+	return formatDate(date, 'EEEEEE', locale);
+};
 
 // Date getters
 export { getDate };
@@ -112,9 +114,8 @@ export { addDays, addWeeks, addMonths };
 // substraction operations
 export { subMonths };
 
-export const checkEqual = (date_1, date_2) => {
-    if(date_1 && date_2)
-        return isSameDay(date_1, date_2);
-    return false;
-}
+export const checkEqual = (dateLeft, dateRight) => {
+	if (dateLeft && dateRight) return isSameDay(dateLeft, dateRight);
+	return false;
+};
 export { isSameMonth };

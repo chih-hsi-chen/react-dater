@@ -6,31 +6,22 @@ import { getFirstWeekDay, addDays } from './helpers/date-utils';
 const WEEK_OFFSET = [0, 1, 2, 3, 4, 5, 6];
 
 const renderDays = (day) => {
-    const start_of_week = getFirstWeekDay(day);
-    const days = [];
+	const startOfWeek = getFirstWeekDay(day);
+	const days = [];
 
-    return days.concat(
-        WEEK_OFFSET.map(offset => {
-            const currentDay = addDays(start_of_week, offset);
-            return (
-                <Day
-                    key={offset}
-                    day = {currentDay}
-                />
-            );
-        })
-    );
-}
+	return days.concat(
+		WEEK_OFFSET.map((offset) => {
+			const currentDay = addDays(startOfWeek, offset);
+			return <Day key={offset} day={currentDay} />;
+		})
+	);
+};
 const Week = (props) => {
-    return (
-        <div className = "rdx__week">
-            {renderDays(props.day)}
-        </div>
-    );
-}
+	return <div className='rdx__week'>{renderDays(props.day)}</div>;
+};
 
 Week.propTypes = {
-    day: PropTypes.instanceOf(Date).isRequired,
+	day: PropTypes.instanceOf(Date).isRequired
 };
 
 export default Week;

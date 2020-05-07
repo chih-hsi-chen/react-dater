@@ -11,7 +11,7 @@ const PopperComponent = (props) => {
 		hidePopper,
 		popperComponent,
 		popperPlacement,
-		targetComponent,
+		targetComponent
 	} = props;
 
 	const [referenceElement, setReferenceElement] = useState(null);
@@ -22,18 +22,17 @@ const PopperComponent = (props) => {
 			{
 				name: 'arrow',
 				options: {
-					element: arrowElement,
-				},
-				
+					element: arrowElement
+				}
 			},
 			{
 				name: 'offset',
 				options: {
 					offset: [0, 10]
 				}
-			},
+			}
 		],
-		placement: popperPlacement,
+		placement: popperPlacement
 	});
 
 	let popper = null;
@@ -58,28 +57,24 @@ const PopperComponent = (props) => {
 	// }
 	popper = (
 		<div
-			className = {cname('rdx__popper')}
-			ref = {setPopperElement}
+			className={cname('rdx__popper')}
+			ref={setPopperElement}
 			style={styles.popper}
 			{...attributes.popper}
-			data-popper-reference-hidden = {hidePopper}
+			data-popper-reference-hidden={hidePopper}
 		>
-			{ React.cloneElement(popperComponent, {},
-				<div
-					className = 'rdx__arrow'
-					ref={setArrowElement}
-				/>
-			) }
+			{React.cloneElement(
+				popperComponent,
+				{},
+				<div className='rdx__arrow' ref={setArrowElement} />
+			)}
 		</div>
 	);
-	
+
 	return (
 		<React.Fragment>
-			<div
-				className = 'rdx__display-wrapper'
-				ref={setReferenceElement}
-			>
-				{ targetComponent }
+			<div className='rdx__display-wrapper' ref={setReferenceElement}>
+				{targetComponent}
 			</div>
 			{popper}
 		</React.Fragment>
@@ -93,9 +88,8 @@ PopperComponent.propTypes = {
 	popperPlacement: PropTypes.oneOf(popperPlacementPositions),
 	popperContainer: PropTypes.func,
 	popperProps: PropTypes.object,
-	targetComponent: PropTypes.element,
-
-}
+	targetComponent: PropTypes.element
+};
 PopperComponent.defaultProps = {
 	hidePopper: false,
 	popperProps: {},
