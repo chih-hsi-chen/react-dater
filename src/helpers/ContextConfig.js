@@ -14,7 +14,8 @@ ContextProvider.propTypes = {
 	locale: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 	selected: PropTypes.instanceOf(Date),
 	viewed: PropTypes.instanceOf(Date).isRequired,
-	onDaySelect: PropTypes.func.isRequired
+	onDaySelect: PropTypes.func,
+	onTimeSelect: PropTypes.func,
 };
 
 export default ContextProvider;

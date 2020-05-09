@@ -39,6 +39,10 @@ class Example extends Component {
 
 ## Props
 
+### showMonthYearSeparate - (boolean)
+
+If true, it will show current month and year separately with their own prev/next buttons.
+
 ### dateFormatCalendar - (string)
 The format of header of calendar, the default value is `LLL yyyy`.
 
@@ -73,6 +77,41 @@ class Example extends Component {
         );
     }
 }
+```
+
+## Browser Support
+
+PopperJS can support modern versions of Chrome, Firefox, Safari and Edge. However, it cannot directly support IE11 or IE9. Therefore, we can add some polyfills to make it work without errors.
+
+There are two solutions to add polyfills:
+
+### Create-React-App
+
+If you use Create-React-App and want to support IE11 or IE9, you can use [react-app-polyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill)
+
+**IE11**
+
+```jsx
+// These two must be top in src/index.js
+import 'react-app-polyfill/stable';
+import 'react-app-polyfill/ie11';
+```
+
+**IE9**
+
+```jsx
+// These two must be top in src/index.js
+import 'react-app-polyfill/stable';
+// this also includes ie11, so you don't have to include ie11 additionally.
+import 'react-app-polyfill/ie9';
+```
+
+### Add script tag
+
+Add following script tag before your bundled js files:
+
+```html
+<script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.find,Promise,Object.assign"></script>
 ```
 
 ## License

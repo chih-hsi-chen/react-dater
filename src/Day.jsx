@@ -13,7 +13,7 @@ const Day = (props) => {
 	const getClassNames = () => {
 		return cname('rdx__day', {
 			'rdx__day--selected': checkEqual(day, selected),
-			'rdx__day--out-month': !isSameMonth(day, viewed)
+			'rdx__day--out-month': !isSameMonth(day, viewed),
 		});
 	};
 
@@ -27,7 +27,7 @@ const Day = (props) => {
 Day.propTypes = {
 	day: PropTypes.instanceOf(Date),
 	selected: PropTypes.instanceOf(Date),
-	onDaySelect: PropTypes.func
+	onDaySelect: PropTypes.func,
 };
 
 export default (props) => (

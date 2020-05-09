@@ -4,7 +4,7 @@ import Week from './Week';
 import {
 	getFirstWeekDay,
 	getFirstMonthDay,
-	addWeeks
+	addWeeks,
 } from './helpers/date-utils';
 
 // basically, show 6 weeks in month
@@ -30,7 +30,10 @@ const Month = (props) => {
 };
 
 Month.propTypes = {
-	day: PropTypes.instanceOf(Date).isRequired
+	day: PropTypes.instanceOf(Date).isRequired,
 };
 
-export default Month;
+export default React.memo(Month, (prevProps, nextProps) => {
+	if (prevProps.day === nextProps.day) return true;
+	return false;
+});

@@ -21,7 +21,7 @@ const Week = (props) => {
 };
 
 Week.propTypes = {
-	day: PropTypes.instanceOf(Date).isRequired
+	day: PropTypes.instanceOf(Date).isRequired,
 };
 
 export default Week;

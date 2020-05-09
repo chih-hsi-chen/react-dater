@@ -3,35 +3,47 @@ import PropTypes from 'prop-types';
 import CalendarContainer from './CalendarContainer';
 import cname from 'classnames';
 import Month from './Month';
+import Time from './Time';
 import {
 	newDate,
 	formatDate,
 	addDays,
+	addMonths,
+	addYears,
+	subMonths,
+	subYears,
 	getFirstWeekDay,
 	getWeekdayNameInLocale,
-	addMonths,
-	subMonths
 } from './helpers/date-utils';
+import { CalendarToday, AccessTime } from '@material-ui/icons';
 import { RDXContext } from './helpers/ContextConfig';
 
 class Calendar extends Component {
 	static propTypes = {
 		dateFormat: PropTypes.string.isRequired,
 		selected: PropTypes.instanceOf(Date),
-		viewed: PropTypes.instanceOf(Date)
+		viewed: PropTypes.instanceOf(Date),
+		showMonthYearSeparate: PropTypes.bool,
+		selectTime: PropTypes.bool,
+		selectDateRange: PropTypes.bool,
+		selectTimeRange: PropTypes.bool,
 	};
 
 	constructor(props) {
 		super(props);
 
 		this.state = {
-			date: this.getDateInView()
+			// date: this.getDateInView(),
+			timeCollapse: true,
 		};
 		this.containerRef = React.createRef();
 	}
 
 	// handle click-outside event, prepared for 'react-onclickoutside' module
 	handleClickOutside = (e) => {
+		this.setState({
+			timeCollapse: true,
+		});
 		this.props.onClickOutside(e);
 	};
 
@@ -52,22 +64,51 @@ class Calendar extends Component {
 		this.props.onChangeView(addMonths(this.props.viewed, 1));
 	};
 
-	renderCurrentMonth = (date = this.state.date) => {
+	decreaseYear = () => {
+		this.props.onChangeView(subYears(this.props.viewed, 1));
+	};
+
+	increaseYear = () => {
+		this.props.onChangeView(addYears(this.props.viewed, 1));
+	};
+
+	renderCurrentMonthYear = (date = this.getDateInView()) => {
 		const { locale } = this.context;
 
 		return (
-			<div className={cname('rdx__current-month')}>
+			<div className={cname('rdx__current-headerInfo')}>
+				{this.renderPreviousButton()}
+				{this.renderNextButton()}
 				{formatDate(date, this.props.dateFormat, locale)}
 			</div>
 		);
 	};
 
-	renderWeekdayHeader = (date = this.state.date) => {
+	renderCurrentMonthYearSparate = (date = this.getDateInView()) => {
+		const { locale } = this.context;
+
+		return (
+			<div className={cname('rdx__current-headerInfo')}>
+				<div className='rdx__month-info'>
+					{this.renderPreviousButton('MONTH')}
+					{this.renderNextButton('MONTH')}
+					{formatDate(date, 'LLL', locale)}
+				</div>
+				<div className='rdx__year-info'>
+					{this.renderPreviousButton('YEAR')}
+					{this.renderNextButton('YEAR')}
+					{formatDate(date, 'yyyy', locale)}
+				</div>
+			</div>
+		);
+	};
+
+	renderWeekdayHeader = (date = this.getDateInView()) => {
 		const { locale } = this.context;
 		const startDayOfWeek = getFirstWeekDay(date, locale);
-		const weekdayNames = [];
+		let weekdayNames = [];
 
-		return weekdayNames.concat(
+		weekdayNames = weekdayNames.concat(
 			[0, 1, 2, 3, 4, 5, 6].map((offset) => {
 				const day = addDays(startDayOfWeek, offset);
 				const weekdayName = getWeekdayNameInLocale(day, locale);
@@ -79,17 +120,33 @@ class Calendar extends Component {
 				);
 			})
 		);
+
+		return <div className='rdx__weekdayname-header'>{weekdayNames}</div>;
+	};
+
+	renderDefaultHeader = ({ monthDate }) => {
+		return (
+			<div className='rdx__header rdx__header--default'>
+				{this.renderCurrentMonthYear(monthDate)}
+				{this.renderWeekdayHeader(monthDate)}
+			</div>
+		);
+	};
+
+	renderSeparateMonthYearHeader = ({ monthDate }) => {
+		return (
+			<div className='rdx__header rdx__header--separate'>
+				{this.renderCurrentMonthYearSparate(monthDate)}
+				{this.renderWeekdayHeader(monthDate)}
+			</div>
+		);
 	};
 
 	renderHeader = ({ monthDate }) => {
-		return (
-			<div className='rdx__header'>
-				{this.renderCurrentMonth(monthDate)}
-				<div className='rdx__weekdayname-header'>
-					{this.renderWeekdayHeader(monthDate)}
-				</div>
-			</div>
-		);
+		if (this.props.showMonthYearSeparate)
+			return this.renderSeparateMonthYearHeader({ monthDate });
+
+		return this.renderDefaultHeader({ monthDate });
 	};
 
 	renderMonths = () => {
@@ -104,7 +161,22 @@ class Calendar extends Component {
 		);
 	};
 
-	renderPreviousButton = () => {
+	renderPreviousButton = (handlerType = 'MONTH') => {
+		const Label = `NEXT ${handlerType}`;
+		let clickHandler;
+
+		switch (handlerType) {
+			case 'MONTH':
+				clickHandler = this.decreaseMonth;
+				break;
+			case 'YEAR':
+				clickHandler = this.decreaseYear;
+				break;
+			default:
+				clickHandler = () => {};
+				break;
+		}
+
 		return (
 			<button
 				type='button'
@@ -112,15 +184,30 @@ class Calendar extends Component {
 					'rdx__navigation',
 					'rdx__navigation--previousMonth'
 				)}
-				aria-label='Previous Month'
-				onClick={this.decreaseMonth}
+				aria-label={Label}
+				onClick={clickHandler}
 			>
-				Previous Month
+				{`PREVIOUS ${handlerType}`}
 			</button>
 		);
 	};
 
-	renderNextButton = () => {
+	renderNextButton = (handlerType = 'MONTH') => {
+		const Label = `NEXT ${handlerType}`;
+		let clickHandler;
+
+		switch (handlerType) {
+			case 'MONTH':
+				clickHandler = this.increaseMonth;
+				break;
+			case 'YEAR':
+				clickHandler = this.increaseYear;
+				break;
+			default:
+				clickHandler = () => {};
+				break;
+		}
+
 		return (
 			<button
 				type='button'
@@ -128,22 +215,57 @@ class Calendar extends Component {
 					'rdx__navigation',
 					'rdx__navigation--nextMonth'
 				)}
-				aria-label='Next Month'
-				onClick={this.increaseMonth}
+				aria-label={Label}
+				onClick={clickHandler}
 			>
-				Next Month
+				{Label}
 			</button>
+		);
+	};
+
+	renderFooter = () => {
+		const { timeCollapse } = this.state;
+		const classes = {
+			root: 'rdx__timeToggleIcon',
+		};
+
+		return (
+			<div
+				className='rdx__time-footer'
+				data-collapse={this.state.timeCollapse}
+			>
+				<div
+					className='rdx__timeToggleWrapper'
+					onClick={() =>
+						this.setState((prevState) => ({
+							timeCollapse: !prevState.timeCollapse,
+						}))
+					}
+				>
+					{timeCollapse ? (
+						<AccessTime classes={classes} />
+					) : (
+						<CalendarToday classes={classes} />
+					)}
+				</div>
+				<div className='rdx__timeDisplayWrapper'>
+					<Time />
+				</div>
+			</div>
 		);
 	};
 
 	render() {
 		return (
 			<div ref={this.containerRef}>
-				<CalendarContainer className={cname('rdx')}>
-					{this.renderPreviousButton()}
-					{this.renderNextButton()}
+				<CalendarContainer
+					className={cname('rdx', {
+						'rdx--select-time': this.props.selectTime,
+					})}
+				>
 					{this.renderMonths()}
 					{this.props.children}
+					{this.props.selectTime && this.renderFooter()}
 				</CalendarContainer>
 			</div>
 		);

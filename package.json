@@ -18,7 +18,7 @@
 		"test": "run-s test:prettier test:lint test:build",
 		"test:build": "run-s build",
 		"test:prettier": "prettier --write \"./**/*.{js,jsx,json}\"",
-		"test:lint": "eslint src/*",
+		"test:lint": "eslint src/* --fix",
 		"test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
 		"test:watch": "react-scripts test --env=jsdom",
 		"predeploy": "cd example && npm install && npm run build",
@@ -30,10 +30,12 @@
 		}
 	},
 	"peerDependencies": {
-		"react": ">=16.3",
-		"react-dom": ">=16.3"
+		"react": ">=16.13",
+		"react-dom": ">=16.13"
 	},
 	"dependencies": {
+		"@material-ui/core": "^4.9.13",
+		"@material-ui/icons": "^4.9.1",
 		"@popperjs/core": "^2.4.0",
 		"classnames": "^2.2.6",
 		"date-fns": "^2.12.0",
@@ -43,6 +45,7 @@
 	},
 	"devDependencies": {
 		"babel-eslint": "^10.0.3",
+		"babel-plugin-transform-imports": "^2.0.0",
 		"cross-env": "^7.0.2",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^6.7.0",

@@ -11,7 +11,7 @@ const PopperComponent = (props) => {
 		hidePopper,
 		popperComponent,
 		popperPlacement,
-		targetComponent
+		targetComponent,
 	} = props;
 
 	const [referenceElement, setReferenceElement] = useState(null);
@@ -22,17 +22,17 @@ const PopperComponent = (props) => {
 			{
 				name: 'arrow',
 				options: {
-					element: arrowElement
-				}
+					element: arrowElement,
+				},
 			},
 			{
 				name: 'offset',
 				options: {
-					offset: [0, 10]
-				}
-			}
+					offset: [0, 10],
+				},
+			},
 		],
-		placement: popperPlacement
+		placement: popperPlacement,
 	});
 
 	let popper = null;
@@ -88,12 +88,12 @@ PopperComponent.propTypes = {
 	popperPlacement: PropTypes.oneOf(popperPlacementPositions),
 	popperContainer: PropTypes.func,
 	popperProps: PropTypes.object,
-	targetComponent: PropTypes.element
+	targetComponent: PropTypes.element,
 };
 PopperComponent.defaultProps = {
 	hidePopper: false,
 	popperProps: {},
-	popperPlacement: 'bottom-start'
+	popperPlacement: 'bottom-start',
 };
 
 export default PopperComponent;

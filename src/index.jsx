@@ -5,7 +5,15 @@ import onClickOutside from 'react-onclickoutside';
 import Calendar from './Calendar';
 import PopperComponent from './PopperComponent';
 import ContextProvider from './helpers/ContextConfig';
-import { parseDate, newDate, formatDate } from './helpers/date-utils';
+import {
+	parseDate,
+	newDate,
+	formatDate,
+	setTime,
+	getHours,
+	getMinutes,
+	getSeconds,
+} from './helpers/date-utils';
 import './stylesheets/DatePicker.css';
 
 const WrappedCalendar = onClickOutside(Calendar);
@@ -22,14 +30,17 @@ export default class DatePicker extends React.Component {
 		readOnly: PropTypes.bool,
 		inputElement: PropTypes.element,
 		onChange: PropTypes.func,
-
-		selected: PropTypes.instanceOf(Date)
+		selected: PropTypes.instanceOf(Date),
+		showMonthYearSeparate: PropTypes.bool,
+		selectTime: PropTypes.bool,
+		selectDateRange: PropTypes.bool,
+		selectTimeRange: PropTypes.bool,
 	};
 
 	static defaultProps = {
 		dateFormatCalendar: 'LLL yyyy',
 		dateFormatInput: 'MM/dd/yyyy',
-		onChange: () => {}
+		onChange: () => {},
 	};
 
 	constructor(props) {
@@ -46,7 +57,7 @@ export default class DatePicker extends React.Component {
 			inputValue: null,
 			focused: false,
 			selectedDate: initialDateToSee,
-			viewDate: initialDateToSee
+			viewDate: initialDateToSee,
 		};
 	};
 
@@ -61,13 +72,13 @@ export default class DatePicker extends React.Component {
 	setOpen = (nextOpenState, isResetView) => {
 		this.setState((prevState) => {
 			const BaseUpdate = {
-				open: nextOpenState
+				open: nextOpenState,
 			};
 			if (nextOpenState || !isResetView) return BaseUpdate;
 
 			return {
 				...BaseUpdate,
-				viewDate: prevState.selectedDate
+				viewDate: prevState.selectedDate,
 			};
 		});
 	};
@@ -79,19 +90,29 @@ export default class DatePicker extends React.Component {
 	 *
 	 */
 	setSelected = (date, event, keepInput) => {
+		const { selectedDate: selected } = this.state;
+		let changedDate = date;
+
+		if (!this.props.selectTime || !keepInput) {
+			changedDate = setTime(changedDate, {
+				hour: getHours(selected),
+				min: getMinutes(selected),
+				sec: getSeconds(selected),
+			});
+		}
 		this.setState({
-			selectedDate: date,
-			viewDate: date
+			selectedDate: changedDate,
+			viewDate: changedDate,
 		});
 		if (!keepInput) this.setState({ inputValue: null });
 
 		// call the callback function which is from parent element
-		this.props.onChange(date, event);
+		this.props.onChange(changedDate, event);
 	};
 
 	setViewDate = (date) => {
 		this.setState({
-			viewDate: date
+			viewDate: date,
 		});
 	};
 
@@ -120,7 +141,7 @@ export default class DatePicker extends React.Component {
 		);
 
 		this.setState({
-			inputValue: event.target.value
+			inputValue: event.target.value,
 		});
 
 		if (parsedDate) this.setSelected(parsedDate, event, true);
@@ -130,6 +151,21 @@ export default class DatePicker extends React.Component {
 		this.setSelected(date, event, false);
 
 		this.setOpen(false, false);
+	};
+
+	handleTimeSelect = ({ hour = 0, min = 0, sec = 0 }) => {
+		const { selectedDate: selected } = this.state;
+
+		const changedDate = setTime(selected, {
+			hour,
+			min,
+			sec,
+		});
+
+		this.setState({
+			selectedDate: changedDate,
+			inputValue: null,
+		});
 	};
 
 	handleCalendarClickOutside = (e) => {
@@ -144,6 +180,10 @@ export default class DatePicker extends React.Component {
 				selected={this.state.selectedDate}
 				viewed={this.state.viewDate}
 				onChangeView={this.setViewDate}
+				showMonthYearSeparate={this.props.showMonthYearSeparate}
+				selectTime={this.props.selectTime} // for single time select
+				selectDateRange={this.props.selectDateRange} // for multiple day select
+				selectTimeRange={this.props.selectTimeRange} // for multiple time select
 			/>
 		);
 	};
@@ -175,7 +215,7 @@ export default class DatePicker extends React.Component {
 			placeholder: this.props.placeholderText,
 			readOnly: this.props.readOnly,
 			disabled: this.props.disabled,
-			className: InputClassName
+			className: InputClassName,
 		});
 	};
 
@@ -188,6 +228,7 @@ export default class DatePicker extends React.Component {
 				selected={this.state.selectedDate}
 				viewed={this.state.viewDate}
 				onDaySelect={this.handleSelect}
+				onTimeSelect={this.handleTimeSelect}
 			>
 				<PopperComponent
 					hidePopper={!this.isCalendarOpen()}

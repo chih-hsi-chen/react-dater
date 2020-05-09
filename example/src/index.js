@@ -1,3 +1,5 @@
+import 'react-app-polyfill/stable';
+import 'react-app-polyfill/ie11';
 import './index.css';
 
 import React from 'react';

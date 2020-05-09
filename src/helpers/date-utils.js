@@ -5,14 +5,23 @@ import {
 	addDays,
 	addWeeks,
 	addMonths,
+	addYears,
 	subMonths,
+	subYears,
+	setHours,
+	setMinutes,
+	setSeconds,
 	parse,
 	parseISO,
 	toDate,
 	isValid,
+	getHours,
+	getMinutes,
+	getSeconds,
 	getDate,
 	isSameDay,
-	isSameMonth
+	isSameMonth,
+	getTime,
 } from 'date-fns';
 
 import { enUS } from 'date-fns/locale';
@@ -35,14 +44,14 @@ export const formatDate = (date, formatStr = 'yyyy-MM-dd', locale) => {
 	const LocaleObj = getLocaleObject(locale);
 
 	return format(date, formatStr, {
-		locale: LocaleObj
+		locale: LocaleObj,
 	});
 };
 
 export const parseDate = (value, dateFormat, locale) => {
 	const LocaleObj = getLocaleObject(locale);
 	const parsedDate = parse(value, dateFormat, new Date(), {
-		locale: LocaleObj
+		locale: LocaleObj,
 	});
 
 	return isValid(parsedDate) && parsedDate;
@@ -51,7 +60,7 @@ export const parseDate = (value, dateFormat, locale) => {
 export const getFirstWeekDay = (weekDate, locale) => {
 	const LocaleObj = getLocaleObject(locale);
 	return startOfWeek(weekDate, {
-		locale: LocaleObj
+		locale: LocaleObj,
 	});
 };
 
@@ -105,14 +114,24 @@ export const getWeekdayNameInLocale = (date, locale) => {
 	return formatDate(date, 'EEEEEE', locale);
 };
 
+export const setTime = (date, { hour = 0, min = 0, sec = 0 }) => {
+	return setHours(setMinutes(setSeconds(date, sec), min), hour);
+};
+
+export const getHoursByPeriod = (date) => {
+	const hours = getHours(date);
+
+	return hours >= 12 ? hours - 12 : hours;
+};
+
 // Date getters
-export { getDate };
+export { getHours, getMinutes, getSeconds, getTime, getDate };
 
 // addition operations
-export { addDays, addWeeks, addMonths };
+export { addDays, addWeeks, addMonths, addYears };
 
 // substraction operations
-export { subMonths };
+export { subMonths, subYears };
 
 export const checkEqual = (dateLeft, dateRight) => {
 	if (dateLeft && dateRight) return isSameDay(dateLeft, dateRight);
