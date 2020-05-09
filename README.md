@@ -2,7 +2,7 @@
 
 > A simple datepicker for react
 
-[![NPM](https://img.shields.io/npm/v/react-dater.svg)](https://www.npmjs.com/package/react-dater) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![dependencies Status](https://david-dm.org/chih-hsi-chen/react-dater/status.svg)](https://david-dm.org/chih-hsi-chen/react-dater)
+[![NPM](https://img.shields.io/npm/v/react-dater.svg)](https://www.npmjs.com/package/react-dater) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![dependencies Status](https://david-dm.org/chih-hsi-chen/react-dater/status.svg)](https://david-dm.org/chih-hsi-chen/react-dater) [![Build Status](https://travis-ci.org/chih-hsi-chen/react-dater.svg?branch=master)](https://travis-ci.org/chih-hsi-chen/react-dater)
 
 ## Install
 
