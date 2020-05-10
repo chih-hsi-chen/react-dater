@@ -1,11 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { RDXContext } from './helpers/ContextConfig';
-import {
-	getHours,
-	getMinutes,
-	getSeconds,
-	getHoursByPeriod,
-} from './helpers/date-utils';
+import { getHours, getMinutes, getSeconds } from './helpers/date-utils';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 
 const createCustomArrow = function (Arrow) {
@@ -22,7 +17,7 @@ const CustomArrowUp = createCustomArrow(ArrowDropUp);
 const CustomArrowDown = createCustomArrow(ArrowDropDown);
 
 const typeToLimit = {
-	HOUR: 11,
+	HOUR: 23,
 	MINUTE: 59,
 	SECOND: 59,
 };
@@ -36,30 +31,30 @@ const getNextNumberInBound = (type, nextNum) => {
 
 const Time = (props) => {
 	// If true, it means 'AM'
-	const [period, setPeriod] = useState(getHours(props.selected) < 12);
+	const period = getHours(props.selected) < 12;
+	const periodHour = getHours(props.selected) % 12;
 
 	const TogglePeriod = () => {
 		let hour = getHours(props.selected);
 
-		hour = period ? hour + 12 : hour - 12;
+		// switch between AM / PM
+		hour = periodHour + period * 12;
 
 		props.onTimeSelect({
 			hour,
 			min: getMinutes(props.selected),
 			sec: getSeconds(props.selected),
 		});
-		setPeriod((p) => !p);
 	};
 
 	const handleArrowClick = (type = 'SECOND', offset = 1) => {
-		let nextHr = getHoursByPeriod(props.selected);
+		let nextHr = getHours(props.selected);
 		let nextMin = getMinutes(props.selected);
 		let nextSec = getSeconds(props.selected);
 
 		switch (type) {
 			case 'HOUR': {
 				nextHr = getNextNumberInBound(type, nextHr + offset);
-				nextHr += period ? 0 : 12;
 				break;
 			}
 			case 'MINUTE': {
@@ -94,7 +89,7 @@ const Time = (props) => {
 						onClick={() => handleArrowClick('HOUR', -1)}
 					/>
 					<div className='rdx__timenum rdx__timenum--hr'>
-						{getHoursByPeriod(props.selected)}
+						{periodHour + (periodHour === 0) * 12}
 					</div>
 					<CustomArrowDown
 						onClick={() => handleArrowClick('HOUR', 1)}

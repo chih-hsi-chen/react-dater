@@ -21,7 +21,6 @@ import {
 	getDate,
 	isSameDay,
 	isSameMonth,
-	getTime,
 } from 'date-fns';
 
 import { enUS } from 'date-fns/locale';
@@ -118,14 +117,8 @@ export const setTime = (date, { hour = 0, min = 0, sec = 0 }) => {
 	return setHours(setMinutes(setSeconds(date, sec), min), hour);
 };
 
-export const getHoursByPeriod = (date) => {
-	const hours = getHours(date);
-
-	return hours >= 12 ? hours - 12 : hours;
-};
-
 // Date getters
-export { getHours, getMinutes, getSeconds, getTime, getDate };
+export { getHours, getMinutes, getSeconds, getDate };
 
 // addition operations
 export { addDays, addWeeks, addMonths, addYears };
