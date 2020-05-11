@@ -4,7 +4,7 @@ import cname from 'classnames';
 import onClickOutside from 'react-onclickoutside';
 import Calendar from './Calendar';
 import PopperComponent from './PopperComponent';
-import ContextProvider from './helpers/ContextConfig';
+import RDXContext from './helpers/ContextConfig';
 import {
 	parseDate,
 	newDate,
@@ -223,12 +223,14 @@ export default class DatePicker extends React.Component {
 		const calendar = this.renderCalendar();
 
 		return (
-			<ContextProvider
-				locale={this.props.locale}
-				selected={this.state.selectedDate}
-				viewed={this.state.viewDate}
-				onDaySelect={this.handleSelect}
-				onTimeSelect={this.handleTimeSelect}
+			<RDXContext.Provider
+				value={{
+					locale: this.props.locale,
+					selected: this.state.selectedDate,
+					viewed: this.state.viewDate,
+					onDaySelect: this.handleSelect,
+					onTimeSelect: this.handleTimeSelect,
+				}}
 			>
 				<PopperComponent
 					hidePopper={!this.isCalendarOpen()}
@@ -239,7 +241,7 @@ export default class DatePicker extends React.Component {
 						</div>
 					}
 				/>
-			</ContextProvider>
+			</RDXContext.Provider>
 		);
 	}
 }

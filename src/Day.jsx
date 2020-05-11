@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { getDate, checkEqual, isSameMonth } from './helpers/date-utils';
-import { RDXContext } from './helpers/ContextConfig';
+import RDXContext from './helpers/ContextConfig';
 import cname from 'classnames';
 
 const Day = (props) => {

@@ -16,7 +16,7 @@ import {
 	getWeekdayNameInLocale,
 } from './helpers/date-utils';
 import { CalendarToday, AccessTime } from '@material-ui/icons';
-import { RDXContext } from './helpers/ContextConfig';
+import RDXContext from './helpers/ContextConfig';
 
 class Calendar extends Component {
 	static propTypes = {

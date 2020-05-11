@@ -1,5 +1,5 @@
 import React from 'react';
-import { RDXContext } from './helpers/ContextConfig';
+import RDXContext from './helpers/ContextConfig';
 import { getHours, getMinutes, getSeconds } from './helpers/date-utils';
 import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
 
@@ -17,7 +17,7 @@ const CustomArrowUp = createCustomArrow(ArrowDropUp);
 const CustomArrowDown = createCustomArrow(ArrowDropDown);
 
 const typeToLimit = {
-	HOUR: 23,
+	HOUR: 11,
 	MINUTE: 59,
 	SECOND: 59,
 };
@@ -30,31 +30,26 @@ const getNextNumberInBound = (type, nextNum) => {
 };
 
 const Time = (props) => {
-	// If true, it means 'AM'
 	const period = getHours(props.selected) < 12;
 	const periodHour = getHours(props.selected) % 12;
 
 	const TogglePeriod = () => {
-		let hour = getHours(props.selected);
-
-		// switch between AM / PM
-		hour = periodHour + period * 12;
-
 		props.onTimeSelect({
-			hour,
+			hour: periodHour + period * 12,
 			min: getMinutes(props.selected),
 			sec: getSeconds(props.selected),
 		});
 	};
 
 	const handleArrowClick = (type = 'SECOND', offset = 1) => {
-		let nextHr = getHours(props.selected);
+		let nextHr = periodHour;
 		let nextMin = getMinutes(props.selected);
 		let nextSec = getSeconds(props.selected);
 
 		switch (type) {
 			case 'HOUR': {
 				nextHr = getNextNumberInBound(type, nextHr + offset);
+				nextHr += !period * 12;
 				break;
 			}
 			case 'MINUTE': {
@@ -136,4 +131,4 @@ const TimeWithContext = (props) => {
 	);
 };
 
-export default TimeWithContext;
+export default React.memo(TimeWithContext);
