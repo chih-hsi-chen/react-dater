@@ -6,7 +6,9 @@ const App = () => {
 	return (
 		<>
 			<DatePicker
+				intervals={30}
 				selectTime
+				showMonthYearSeparate
 				dateFormatInput = 'yyyy-MM-dd, h:mm aa'
 			/>
 		</>

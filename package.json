@@ -16,7 +16,7 @@
 		"start": "rm -rf dist/ && microbundle-crl watch --css-modules \"[local]\" --no-compress --format modern,cjs",
 		"prepublish": "run-s build",
 		"test": "run-s test:prettier test:lint test:build",
-		"test:build": "run-s build",
+		"test:build": "cross-env NODE_ENV=production run-s build",
 		"test:prettier": "prettier --write \"./**/*.{js,jsx,json}\"",
 		"test:lint": "eslint \"src/**/*.{js,jsx}\" --fix",
 		"test:unit": "cross-env CI=1 react-scripts test --env=jsdom",
@@ -46,6 +46,7 @@
 	"devDependencies": {
 		"babel-eslint": "^10.0.3",
 		"babel-plugin-transform-imports": "^2.0.0",
+		"babel-plugin-transform-react-remove-prop-types": "^0.4.24",
 		"cross-env": "^7.0.2",
 		"eslint": "^6.8.0",
 		"eslint-config-prettier": "^6.7.0",

@@ -247,43 +247,23 @@
 
 .rdx__timeDisplayWrapper {
     position: relative;
-    width: '100%';
+    width: 100%;
     height: calc(100% - 30px);
+    overflow-y: scroll;
     text-align: initial;
 }
-.rdx__periodToggleBtn {
-    width: 50px;
+.rdx__timeListItem {
     font-size: 13px;
-    color: #fff;
-    border-radius: .3em;
-    outline: 0;
-    padding: 5px;
-    margin: 10px;
-    border: none;
-    cursor: pointer;
-    background-color: #3174da;
-}
-.rdx__periodToggleBtn:hover {
-    background-color: #1f61c4;
-}
-.rdx__time__pickWrapper {
-    display: flex;
-    margin-top: 20px;
-}
-.rdx__time__picker {
-    flex: 1;
     text-align: center;
-}
-.rdx__timenum {
-    font-size: 24px;
-}
-.rdx__timeArrow.MuiSvgIcon-root {
-    fill: #3174da;
-    font-size: 30px;
-    width: 30px;
-    height: 30px;
+    list-style: none;
+    margin: 5px 10px;
+    padding: 4px 0;
+    border-radius: .3em;
     cursor: pointer;
 }
-.rdx__timeArrow.MuiSvgIcon-root:hover {
-    fill: #1f61c4;
+.rdx__timeListItem:hover {
+    background-color: rgba(155, 155, 155, 0.3);
+}
+.rdx__timeListItem--selected {
+    background-color: rgba(52, 125, 235, 0.2);
 }

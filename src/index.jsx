@@ -12,7 +12,6 @@ import {
 	setTime,
 	getHours,
 	getMinutes,
-	getSeconds,
 } from './helpers/date-utils';
 import './stylesheets/DatePicker.css';
 
@@ -23,8 +22,10 @@ export { addLocale, registerDefaultLocale } from './helpers/date-utils';
 export default class DatePicker extends React.Component {
 	static propTypes = {
 		customClassName: PropTypes.string,
+		intervals: PropTypes.number,
 		dateFormatCalendar: PropTypes.string,
 		dateFormatInput: PropTypes.string,
+		dateFormatTime: PropTypes.string,
 		locale: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
 		disabled: PropTypes.bool,
 		readOnly: PropTypes.bool,
@@ -40,6 +41,7 @@ export default class DatePicker extends React.Component {
 	static defaultProps = {
 		dateFormatCalendar: 'LLL yyyy',
 		dateFormatInput: 'MM/dd/yyyy',
+		dateFormatTime: 'HH:mm',
 		onChange: () => {},
 	};
 
@@ -97,7 +99,6 @@ export default class DatePicker extends React.Component {
 			changedDate = setTime(changedDate, {
 				hour: getHours(selected),
 				min: getMinutes(selected),
-				sec: getSeconds(selected),
 			});
 		}
 		this.setState({
@@ -121,8 +122,7 @@ export default class DatePicker extends React.Component {
 	};
 
 	handleFocus = (e) => {
-		if (!this.state.open) this.setOpen(true);
-
+		// if (!this.state.open) this.setOpen(true);
 		// this.setState({
 		// 	focused: true
 		// });
@@ -153,13 +153,12 @@ export default class DatePicker extends React.Component {
 		this.setOpen(false, false);
 	};
 
-	handleTimeSelect = ({ hour = 0, min = 0, sec = 0 }) => {
+	handleTimeSelect = (time) => {
 		const { selectedDate: selected } = this.state;
 
 		const changedDate = setTime(selected, {
-			hour,
-			min,
-			sec,
+			hour: getHours(time),
+			min: getMinutes(time),
 		});
 
 		this.setState({
@@ -175,6 +174,7 @@ export default class DatePicker extends React.Component {
 	renderCalendar = () => {
 		return (
 			<WrappedCalendar
+				intervals={this.props.intervals}
 				dateFormat={this.props.dateFormatCalendar}
 				onClickOutside={this.handleCalendarClickOutside}
 				selected={this.state.selectedDate}

@@ -18,9 +18,15 @@ import {
 import { CalendarToday, AccessTime } from '@material-ui/icons';
 import RDXContext from './helpers/ContextConfig';
 
+const toggleIconClasses = {
+	root: 'rdx__timeToggleIcon',
+};
+
 class Calendar extends Component {
 	static propTypes = {
+		intervals: PropTypes.number,
 		dateFormat: PropTypes.string.isRequired,
+		timeFormat: PropTypes.string,
 		selected: PropTypes.instanceOf(Date),
 		viewed: PropTypes.instanceOf(Date),
 		showMonthYearSeparate: PropTypes.bool,
@@ -37,6 +43,7 @@ class Calendar extends Component {
 			timeCollapse: true,
 		};
 		this.containerRef = React.createRef();
+		this.headRef = React.createRef();
 	}
 
 	// handle click-outside event, prepared for 'react-onclickoutside' module
@@ -45,6 +52,12 @@ class Calendar extends Component {
 			timeCollapse: true,
 		});
 		this.props.onClickOutside(e);
+	};
+
+	setTimeLayerOpen = (status) => {
+		this.setState({
+			timeCollapse: status,
+		});
 	};
 
 	getDateInView = () => {
@@ -225,10 +238,6 @@ class Calendar extends Component {
 
 	renderFooter = () => {
 		const { timeCollapse } = this.state;
-		const classes = {
-			root: 'rdx__timeToggleIcon',
-		};
-
 		return (
 			<div
 				className='rdx__time-footer'
@@ -236,21 +245,22 @@ class Calendar extends Component {
 			>
 				<div
 					className='rdx__timeToggleWrapper'
-					onClick={() =>
-						this.setState((prevState) => ({
-							timeCollapse: !prevState.timeCollapse,
-						}))
-					}
+					onClick={() => this.setTimeLayerOpen(!timeCollapse)}
+					ref={this.headRef}
 				>
 					{timeCollapse ? (
-						<AccessTime classes={classes} />
+						<AccessTime classes={toggleIconClasses} />
 					) : (
-						<CalendarToday classes={classes} />
+						<CalendarToday classes={toggleIconClasses} />
 					)}
 				</div>
-				<div className='rdx__timeDisplayWrapper'>
-					<Time />
-				</div>
+				<Time
+					header={this.headRef}
+					container={this.containerRef}
+					format={this.props.timeFormat}
+					intervals={this.props.intervals}
+					setTimeLayerOpen={this.setTimeLayerOpen}
+				/>
 			</div>
 		);
 	};

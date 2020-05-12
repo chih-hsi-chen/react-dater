@@ -5,6 +5,7 @@ import {
 	getFirstWeekDay,
 	getFirstMonthDay,
 	addWeeks,
+	isSameMonth,
 } from './helpers/date-utils';
 
 // basically, show 6 weeks in month
@@ -12,14 +13,21 @@ const FIXED_HEIGHT_WEEK_COUNT = 6;
 
 const renderWeeks = ({ day }) => {
 	const weeks = [];
+	let i;
 	let currentWeekStart = getFirstWeekDay(getFirstMonthDay(day));
 
-	for (let i = 0; i < FIXED_HEIGHT_WEEK_COUNT; i++) {
+	for (i = 0; i < FIXED_HEIGHT_WEEK_COUNT - 1; i++) {
 		weeks.push(
 			<Week weekNumber={i} key={`rdx-week-${i}`} day={currentWeekStart} />
 		);
 
 		currentWeekStart = addWeeks(currentWeekStart, 1);
+	}
+
+	if (isSameMonth(currentWeekStart, day)) {
+		weeks.push(
+			<Week weekNumber={i} key={`rdx-week-${i}`} day={currentWeekStart} />
+		);
 	}
 
 	return weeks;
@@ -34,6 +42,6 @@ Month.propTypes = {
 };
 
 export default React.memo(Month, (prevProps, nextProps) => {
-	if (prevProps.day === nextProps.day) return true;
+	if (isSameMonth(prevProps.day, nextProps.day)) return true;
 	return false;
 });

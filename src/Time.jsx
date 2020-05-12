@@ -1,134 +1,139 @@
-import React from 'react';
-import RDXContext from './helpers/ContextConfig';
-import { getHours, getMinutes, getSeconds } from './helpers/date-utils';
-import { ArrowDropUp, ArrowDropDown } from '@material-ui/icons';
+import React, { useContext, useEffect, useRef } from 'react';
+import cname from 'classnames';
+import RDXContext, { connect } from './helpers/ContextConfig';
+import {
+	getHours,
+	getMinutes,
+	newDate,
+	getStartOfDay,
+	formatDate,
+} from './helpers/date-utils';
+import { addMinutes } from 'date-fns';
 
-const createCustomArrow = function (Arrow) {
-	return (props) => (
-		<Arrow
-			{...props}
-			classes={{
-				root: 'rdx__timeArrow',
-			}}
-		/>
-	);
-};
-const CustomArrowUp = createCustomArrow(ArrowDropUp);
-const CustomArrowDown = createCustomArrow(ArrowDropDown);
+function select() {
+	const { locale, selected, onTimeSelect } = useContext(RDXContext);
 
-const typeToLimit = {
-	HOUR: 11,
-	MINUTE: 59,
-	SECOND: 59,
-};
-const getNextNumberInBound = (type, nextNum) => {
-	const limit = typeToLimit[type];
-
-	if (!limit) return 0;
-
-	return nextNum < 0 ? limit : nextNum > limit ? 0 : nextNum;
-};
-
-const Time = (props) => {
-	const period = getHours(props.selected) < 12;
-	const periodHour = getHours(props.selected) % 12;
-
-	const TogglePeriod = () => {
-		props.onTimeSelect({
-			hour: periodHour + period * 12,
-			min: getMinutes(props.selected),
-			sec: getSeconds(props.selected),
-		});
+	return {
+		locale,
+		selected,
+		onTimeSelect,
 	};
+}
 
-	const handleArrowClick = (type = 'SECOND', offset = 1) => {
-		let nextHr = periodHour;
-		let nextMin = getMinutes(props.selected);
-		let nextSec = getSeconds(props.selected);
+/**
+ *
+ * @param {HTMLElement} el
+ */
+function getHeightIncludeMargin(el) {
+	if (!el) return 0;
 
-		switch (type) {
-			case 'HOUR': {
-				nextHr = getNextNumberInBound(type, nextHr + offset);
-				nextHr += !period * 12;
-				break;
-			}
-			case 'MINUTE': {
-				nextMin = getNextNumberInBound(type, nextMin + offset);
-				break;
-			}
-			case 'SECOND':
-			default: {
-				nextSec = getNextNumberInBound(type, nextSec + offset);
-				break;
-			}
-		}
-		props.onTimeSelect({
-			hour: nextHr,
-			min: nextMin,
-			sec: nextSec,
-		});
-	};
+	/*eslint-env browser*/
+	const marginTop = parseInt(getComputedStyle(el).marginTop);
+	const marginBottom = parseInt(getComputedStyle(el).marginBottom);
 
-	return (
-		<div>
-			<button
-				className='rdx__periodToggleBtn'
-				onClick={TogglePeriod}
-				title='Change Period'
-			>
-				{period ? 'AM' : 'PM'}
-			</button>
-			<div className='rdx__time__pickWrapper'>
-				<div className='rdx__time__picker rdx__time__picker--hr'>
-					<CustomArrowUp
-						onClick={() => handleArrowClick('HOUR', -1)}
-					/>
-					<div className='rdx__timenum rdx__timenum--hr'>
-						{periodHour + (periodHour === 0) * 12}
-					</div>
-					<CustomArrowDown
-						onClick={() => handleArrowClick('HOUR', 1)}
-					/>
-				</div>
-				<div className='rdx__time__picker rdx__time__picker--min'>
-					<CustomArrowUp
-						onClick={() => handleArrowClick('MINUTE', -1)}
-					/>
-					<div className='rdx__timenum rdx__timenum--min'>
-						{getMinutes(props.selected)}
-					</div>
-					<CustomArrowDown
-						onClick={() => handleArrowClick('MINUTE', 1)}
-					/>
-				</div>
-				<div className='rdx__time__picker rdx__time__picker--ss'>
-					<CustomArrowUp
-						onClick={() => handleArrowClick('SECOND', -1)}
-					/>
-					<div className='rdx__timenum rdx__timenum--ss'>
-						{getSeconds(props.selected)}
-					</div>
-					<CustomArrowDown
-						onClick={() => handleArrowClick('SECOND', 1)}
-					/>
-				</div>
+	return el.clientHeight + marginTop + marginBottom;
+}
+
+const Time = React.memo(
+	({
+		format,
+		intervals,
+		selected,
+		locale,
+		onTimeSelect,
+		setTimeLayerOpen,
+		header,
+		container,
+	}) => {
+		const activeTime = selected || newDate();
+		const curHr = getHours(activeTime);
+		const curMin = getMinutes(activeTime);
+		const timeIntervals = intervals || 30;
+		const timeFormat = format || 'HH:mm aa';
+		const centerLi = useRef();
+		const timeList = useRef();
+
+		useEffect(() => {
+			const liHeight = getHeightIncludeMargin(centerLi.current);
+			const headerHeight = getHeightIncludeMargin(header.current);
+			const listClientHeight =
+				container.current.clientHeight - headerHeight;
+
+			timeList.current.scrollTop =
+				centerLi.current.offsetTop - (listClientHeight - liHeight) / 2;
+		}, [centerLi.current]);
+
+		const handleClick = (time) => {
+			onTimeSelect(time);
+
+			// close time picker layer
+			setTimeLayerOpen(true);
+		};
+
+		const isCenter = (time) => {
+			const minDiff = curMin - getMinutes(time);
+
+			return (
+				curHr === getHours(time) &&
+				minDiff < timeIntervals &&
+				minDiff >= 0
+			);
+		};
+
+		const isSelected = (time) =>
+			curHr === getHours(time) && curMin === getMinutes(time);
+
+		const getClassName = (time) => {
+			return cname('rdx__timeListItem', {
+				'rdx__timeListItem--selected': isSelected(time),
+			});
+		};
+
+		const renderTimes = () => {
+			const times = [];
+
+			const base = getStartOfDay(activeTime);
+			const intervalCount = 1440 / timeIntervals;
+
+			for (let i = 0; i < intervalCount; i++) {
+				const currentTime = addMinutes(base, i * timeIntervals);
+				times.push(currentTime);
+			}
+
+			return times.map((time, idx) => {
+				if (isCenter(time)) {
+					return (
+						<li
+							key={idx}
+							onClick={() => handleClick(time)}
+							className={getClassName(time)}
+							ref={centerLi}
+						>
+							{formatDate(time, timeFormat, locale)}
+						</li>
+					);
+				}
+
+				return (
+					<li
+						key={idx}
+						onClick={() => handleClick(time)}
+						className={getClassName(time)}
+					>
+						{formatDate(time, timeFormat, locale)}
+					</li>
+				);
+			});
+		};
+
+		return (
+			<div ref={timeList} className='rdx__timeDisplayWrapper'>
+				{renderTimes()}
 			</div>
-		</div>
-	);
-};
+		);
+	}
+);
 
-const TimeWithContext = (props) => {
-	return (
-		<RDXContext.Consumer>
-			{({ selected, onTimeSelect }) => (
-				<Time
-					{...props}
-					selected={selected}
-					onTimeSelect={onTimeSelect}
-				/>
-			)}
-		</RDXContext.Consumer>
-	);
-};
+const ConnectedTime = connect(Time, select);
 
-export default React.memo(TimeWithContext);
+export default ConnectedTime;

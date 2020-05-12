@@ -26,14 +26,17 @@ const Day = (props) => {
 
 Day.propTypes = {
 	day: PropTypes.instanceOf(Date),
+	viewed: PropTypes.instanceOf(Date),
 	selected: PropTypes.instanceOf(Date),
 	onDaySelect: PropTypes.func,
 };
 
+const MemoDay = React.memo(Day);
+
 export default (props) => (
 	<RDXContext.Consumer>
 		{({ selected, viewed, onDaySelect }) => (
-			<Day
+			<MemoDay
 				{...props}
 				selected={selected}
 				viewed={viewed}

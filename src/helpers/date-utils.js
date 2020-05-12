@@ -1,5 +1,6 @@
 import {
 	format,
+	startOfDay,
 	startOfWeek,
 	startOfMonth,
 	addDays,
@@ -10,14 +11,12 @@ import {
 	subYears,
 	setHours,
 	setMinutes,
-	setSeconds,
 	parse,
 	parseISO,
 	toDate,
 	isValid,
 	getHours,
 	getMinutes,
-	getSeconds,
 	getDate,
 	isSameDay,
 	isSameMonth,
@@ -113,12 +112,12 @@ export const getWeekdayNameInLocale = (date, locale) => {
 	return formatDate(date, 'EEEEEE', locale);
 };
 
-export const setTime = (date, { hour = 0, min = 0, sec = 0 }) => {
-	return setHours(setMinutes(setSeconds(date, sec), min), hour);
+export const setTime = (date, { hour = 0, min = 0 }) => {
+	return setHours(setMinutes(date, min), hour);
 };
 
 // Date getters
-export { getHours, getMinutes, getSeconds, getDate };
+export { getHours, getMinutes, getDate, startOfDay as getStartOfDay };
 
 // addition operations
 export { addDays, addWeeks, addMonths, addYears };

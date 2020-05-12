@@ -16,4 +16,18 @@ module.exports = {
 			},
 		],
 	],
+	env: {
+		production: {
+			plugins: [
+				[
+					'transform-react-remove-prop-types',
+					{
+						mode: 'remove',
+						ignoreFilenames: ['node_modules'],
+						removeImport: true,
+					},
+				],
+			],
+		},
+	},
 };
