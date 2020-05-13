@@ -16,7 +16,7 @@ function select() {
 }
 
 const Day = React.memo((props) => {
-	const { day, selected, viewed, onDaySelect, } = props;
+	const { day, selected, viewed, onDaySelect } = props;
 
 	const handleClick = (event) => {
 		onDaySelect(day, event);
