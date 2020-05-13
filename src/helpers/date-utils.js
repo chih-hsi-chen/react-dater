@@ -20,6 +20,9 @@ import {
 	getDate,
 	isSameDay,
 	isSameMonth,
+	isBefore,
+	differenceInCalendarYears,
+	differenceInCalendarMonths,
 } from 'date-fns';
 
 import { enUS } from 'date-fns/locale';
@@ -116,6 +119,30 @@ export const setTime = (date, { hour = 0, min = 0 }) => {
 	return setHours(setMinutes(date, min), hour);
 };
 
+export function isYearPrevDisabled(day, { minDate } = {}) {
+	const prevYear = subYears(day, 1);
+
+	return minDate && differenceInCalendarYears(minDate, prevYear) > 0;
+}
+
+export function isMonthPrevDisabled(day, { minDate } = {}) {
+	const prevMonth = subMonths(day, 1);
+
+	return minDate && differenceInCalendarMonths(minDate, prevMonth) > 0;
+}
+
+export function isYearNextDisabled(day, { maxDate } = {}) {
+	const nextYear = addYears(day, 1);
+
+	return maxDate && differenceInCalendarYears(nextYear, maxDate) > 0;
+}
+
+export function isMonthNextDisabled(day, { maxDate } = {}) {
+	const nextMonth = addMonths(day, 1);
+
+	return maxDate && differenceInCalendarMonths(nextMonth, maxDate) > 0;
+}
+
 // Date getters
 export { getHours, getMinutes, getDate, startOfDay as getStartOfDay };
 
@@ -129,4 +156,4 @@ export const checkEqual = (dateLeft, dateRight) => {
 	if (dateLeft && dateRight) return isSameDay(dateLeft, dateRight);
 	return false;
 };
-export { isSameMonth };
+export { isSameMonth, isBefore };

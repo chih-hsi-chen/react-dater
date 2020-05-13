@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { getDate, checkEqual, isSameMonth } from './helpers/date-utils';
-import RDXContext from './helpers/ContextConfig';
+import RDXContext, { connect } from './helpers/ContextConfig';
 import cname from 'classnames';
 
-const Day = (props) => {
-	const { day, selected, viewed, onDaySelect } = props;
+function select() {
+	const { minDate, selected, viewed, onDaySelect } = useContext(RDXContext);
+
+	return {
+		minDate,
+		selected,
+		viewed,
+		onDaySelect,
+	};
+}
+
+const Day = React.memo((props) => {
+	const { day, selected, viewed, onDaySelect, } = props;
 
 	const handleClick = (event) => {
 		onDaySelect(day, event);
@@ -22,7 +33,7 @@ const Day = (props) => {
 			{getDate(day)}
 		</div>
 	);
-};
+});
 
 Day.propTypes = {
 	day: PropTypes.instanceOf(Date),
@@ -31,17 +42,4 @@ Day.propTypes = {
 	onDaySelect: PropTypes.func,
 };
 
-const MemoDay = React.memo(Day);
-
-export default (props) => (
-	<RDXContext.Consumer>
-		{({ selected, viewed, onDaySelect }) => (
-			<MemoDay
-				{...props}
-				selected={selected}
-				viewed={viewed}
-				onDaySelect={onDaySelect}
-			/>
-		)}
-	</RDXContext.Consumer>
-);
+export default connect(Day, select);

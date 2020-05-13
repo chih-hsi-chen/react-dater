@@ -12,6 +12,7 @@ import {
 	setTime,
 	getHours,
 	getMinutes,
+	isBefore,
 } from './helpers/date-utils';
 import './stylesheets/DatePicker.css';
 
@@ -36,6 +37,9 @@ export default class DatePicker extends React.Component {
 		selectTime: PropTypes.bool,
 		selectDateRange: PropTypes.bool,
 		selectTimeRange: PropTypes.bool,
+		minDate: PropTypes.instanceOf(Date),
+		maxDate: PropTypes.instanceOf(Date),
+		skipOverflowCheck: PropTypes.bool,
 	};
 
 	static defaultProps = {
@@ -43,6 +47,7 @@ export default class DatePicker extends React.Component {
 		dateFormatInput: 'MM/dd/yyyy',
 		dateFormatTime: 'HH:mm',
 		onChange: () => {},
+		skipOverflowCheck: false,
 	};
 
 	constructor(props) {
@@ -52,7 +57,16 @@ export default class DatePicker extends React.Component {
 	}
 
 	getInitialState = () => {
-		const initialDateToSee = this.props.selected || newDate();
+		const { minDate, maxDate, selected } = this.props;
+		let initialDateToSee = selected || newDate();
+
+		if (!this.props.skipOverflowCheck) {
+			if (minDate && isBefore(initialDateToSee, minDate)) {
+				initialDateToSee = minDate;
+			} else if (maxDate && isBefore(maxDate, initialDateToSee)) {
+				initialDateToSee = maxDate;
+			}
+		}
 
 		return {
 			open: false,
@@ -184,6 +198,8 @@ export default class DatePicker extends React.Component {
 				selectTime={this.props.selectTime} // for single time select
 				selectDateRange={this.props.selectDateRange} // for multiple day select
 				selectTimeRange={this.props.selectTimeRange} // for multiple time select
+				minDate={this.props.minDate}
+				maxDate={this.props.maxDate}
 			/>
 		);
 	};
@@ -201,6 +217,7 @@ export default class DatePicker extends React.Component {
 				  );
 
 		const InputClassName = cname(
+			'rdx__textInput',
 			this.props.customClassName,
 			InputElemToRender.props.className
 		);
@@ -227,6 +244,7 @@ export default class DatePicker extends React.Component {
 				value={{
 					locale: this.props.locale,
 					selected: this.state.selectedDate,
+					minDate: this.props.minDate,
 					viewed: this.state.viewDate,
 					onDaySelect: this.handleSelect,
 					onTimeSelect: this.handleTimeSelect,

@@ -20,6 +20,14 @@ function select() {
 	};
 }
 
+function getComputedProp(el, propName) {
+	if (window.getComputedStyle) {
+		return window.getComputedStyle(el)[propName];
+	}
+	// For IE 8 or earlier, we need to use currentStyle to access computed style
+	return el.currentStyle[propName];
+}
+
 /**
  *
  * @param {HTMLElement} el
@@ -27,9 +35,8 @@ function select() {
 function getHeightIncludeMargin(el) {
 	if (!el) return 0;
 
-	/*eslint-env browser*/
-	const marginTop = parseInt(getComputedStyle(el).marginTop);
-	const marginBottom = parseInt(getComputedStyle(el).marginBottom);
+	const marginTop = parseInt(getComputedProp(el, 'marginTop'));
+	const marginBottom = parseInt(getComputedProp(el, 'marginBottom'));
 
 	return el.clientHeight + marginTop + marginBottom;
 }

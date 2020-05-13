@@ -1,4 +1,6 @@
 import React from 'react';
+import { subMonths, addMonths } from 'date-fns';
+
 import DatePicker from 'react-dater';
 import 'react-dater/dist/index.css';
 
@@ -6,10 +8,10 @@ const App = () => {
 	return (
 		<>
 			<DatePicker
-				intervals={30}
-				selectTime
 				showMonthYearSeparate
-				dateFormatInput = 'yyyy-MM-dd, h:mm aa'
+				selectTime
+				maxDate={subMonths(new Date(), 1)}
+				selected={addMonths(new Date(), 5)}
 			/>
 		</>
 		

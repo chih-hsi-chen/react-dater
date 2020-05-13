@@ -13,6 +13,10 @@ module.exports = {
 					transform: '@material-ui/icons/esm/${member}',
 					preventFullImport: true,
 				},
+				'date-fns': {
+					transform: 'date-fns/${member}',
+					preventFullImport: true,
+				},
 			},
 		],
 	],

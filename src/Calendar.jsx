@@ -14,6 +14,10 @@ import {
 	subYears,
 	getFirstWeekDay,
 	getWeekdayNameInLocale,
+	isYearPrevDisabled,
+	isYearNextDisabled,
+	isMonthPrevDisabled,
+	isMonthNextDisabled,
 } from './helpers/date-utils';
 import { CalendarToday, AccessTime } from '@material-ui/icons';
 import RDXContext from './helpers/ContextConfig';
@@ -33,6 +37,8 @@ class Calendar extends Component {
 		selectTime: PropTypes.bool,
 		selectDateRange: PropTypes.bool,
 		selectTimeRange: PropTypes.bool,
+		minDate: PropTypes.instanceOf(Date),
+		maxDate: PropTypes.instanceOf(Date),
 	};
 
 	constructor(props) {
@@ -177,25 +183,36 @@ class Calendar extends Component {
 	renderPreviousButton = (handlerType = 'MONTH') => {
 		const Label = `NEXT ${handlerType}`;
 		let clickHandler;
+		let prevDisabled = true;
 
 		switch (handlerType) {
 			case 'MONTH':
 				clickHandler = this.decreaseMonth;
+				prevDisabled = isMonthPrevDisabled(
+					this.props.viewed,
+					this.props
+				);
 				break;
 			case 'YEAR':
 				clickHandler = this.decreaseYear;
+				prevDisabled = isYearPrevDisabled(
+					this.props.viewed,
+					this.props
+				);
 				break;
 			default:
 				clickHandler = () => {};
 				break;
 		}
 
+		if (prevDisabled) return;
+
 		return (
 			<button
 				type='button'
 				className={cname(
 					'rdx__navigation',
-					'rdx__navigation--previousMonth'
+					'rdx__navigation--previous'
 				)}
 				aria-label={Label}
 				onClick={clickHandler}
@@ -208,26 +225,34 @@ class Calendar extends Component {
 	renderNextButton = (handlerType = 'MONTH') => {
 		const Label = `NEXT ${handlerType}`;
 		let clickHandler;
+		let nextDisabled = true;
 
 		switch (handlerType) {
 			case 'MONTH':
 				clickHandler = this.increaseMonth;
+				nextDisabled = isMonthNextDisabled(
+					this.props.viewed,
+					this.props
+				);
 				break;
 			case 'YEAR':
 				clickHandler = this.increaseYear;
+				nextDisabled = isYearNextDisabled(
+					this.props.viewed,
+					this.props
+				);
 				break;
 			default:
 				clickHandler = () => {};
 				break;
 		}
 
+		if (nextDisabled) return;
+
 		return (
 			<button
 				type='button'
-				className={cname(
-					'rdx__navigation',
-					'rdx__navigation--nextMonth'
-				)}
+				className={cname('rdx__navigation', 'rdx__navigation--next')}
 				aria-label={Label}
 				onClick={clickHandler}
 			>

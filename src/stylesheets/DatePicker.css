@@ -16,11 +16,16 @@
     padding-bottom: 30px;
 }
 
+/* Input Field CSS */
+.rdx__textInput[disabled] {
+    user-select: none;
+}
+
+/* Calendar Display CSS */
 .rdx__display-wrapper {
     display: inline-block;
     font-size: 100%;
 }
-
 .rdx__header {
     text-align: center;
     border-bottom: 1px solid transparent;
@@ -67,12 +72,12 @@
     font-size: 100%;
 }
 
-.rdx__navigation--previousMonth {
+.rdx__navigation--previous {
     left: 10px;
     border-right-color: #fff;
 }
 
-.rdx__navigation--nextMonth {
+.rdx__navigation--next {
     right: 10px;
     border-left-color: #fff;
 }
