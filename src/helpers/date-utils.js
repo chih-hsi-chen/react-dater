@@ -23,6 +23,9 @@ import {
 	isBefore,
 	differenceInCalendarYears,
 	differenceInCalendarMonths,
+	differenceInCalendarDays,
+	isWithinInterval,
+	endOfDay,
 } from 'date-fns';
 
 import { enUS } from 'date-fns/locale';
@@ -44,6 +47,8 @@ export const newDate = (initialValue) => {
 export const formatDate = (date, formatStr = 'yyyy-MM-dd', locale) => {
 	const LocaleObj = getLocaleObject(locale);
 
+	if (!isValid(date)) return null;
+
 	return format(date, formatStr, {
 		locale: LocaleObj,
 	});
@@ -55,7 +60,7 @@ export const parseDate = (value, dateFormat, locale) => {
 		locale: LocaleObj,
 	});
 
-	return isValid(parsedDate) && parsedDate;
+	return isValid(parsedDate) ? parsedDate : null;
 };
 
 export const getFirstWeekDay = (weekDate, locale) => {
@@ -141,6 +146,28 @@ export function isMonthNextDisabled(day, { maxDate } = {}) {
 	const nextMonth = addMonths(day, 1);
 
 	return maxDate && differenceInCalendarMonths(nextMonth, maxDate) > 0;
+}
+
+export function determineMinMax(dateLeft, dateRight) {
+	if (differenceInCalendarDays(dateLeft, dateRight) > 0)
+		return [dateRight, dateLeft];
+
+	return [dateLeft, dateRight];
+}
+
+export function isDayInRange(day, dateLeft, dateRight) {
+	const [startDate, endDate] = determineMinMax(dateLeft, dateRight);
+	let valid;
+
+	try {
+		valid = isWithinInterval(day, {
+			start: startOfDay(startDate),
+			end: endOfDay(endDate),
+		});
+	} catch (err) {
+		valid = false;
+	}
+	return valid;
 }
 
 // Date getters

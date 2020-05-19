@@ -9,9 +9,8 @@ const App = () => {
 		<>
 			<DatePicker
 				showMonthYearSeparate
-				selectTime
-				maxDate={subMonths(new Date(), 1)}
-				selected={addMonths(new Date(), 5)}
+				selectDateRange
+				endDate={new Date('2020/03/02')}
 			/>
 		</>
 		

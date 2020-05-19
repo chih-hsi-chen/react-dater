@@ -124,14 +124,18 @@
 .rdx__day--out-month {
     color: #aeaeae;
 }
-
-.rdx__day--selected {
+.rdx__day--in-range {
+    background-color: rgba(52, 125, 235, 0.2);
+}
+.rdx__day--selected, .rdx__day--range-start, .rdx__day--range-end {
     border-radius: .3rem;
     background-color: #347deb;
     color: #fff;
 }
 
-.rdx__day--selected:hover {
+.rdx__day--selected:hover,
+.rdx__day--range-start:hover,
+.rdx__day--range-end:hover {
     background-color: #3174da;
 }
 
@@ -142,7 +146,10 @@
 
 /* Popper Arrow */
 
-.rdx__popper[data-popper-placement^="bottom"] .rdx__arrow, .rdx__popper[data-popper-placement^="top"] .rdx__arrow, .rdx__popper[data-popper-placement^="bottom"] .rdx__arrow::before, .rdx__popper[data-popper-placement^="top"] .rdx__arrow::before {
+.rdx__popper[data-popper-placement^="bottom"] .rdx__arrow,
+.rdx__popper[data-popper-placement^="top"] .rdx__arrow,
+.rdx__popper[data-popper-placement^="bottom"] .rdx__arrow::before,
+.rdx__popper[data-popper-placement^="top"] .rdx__arrow::before {
     box-sizing: content-box;
     position: absolute;
     border: 8px solid transparent;
@@ -174,12 +181,14 @@
     right: -8px;
 }
 
-.rdx__popper[data-popper-placement^="bottom"] .rdx__arrow, .rdx__popper[data-popper-placement^="bottom"] .rdx__arrow::before {
+.rdx__popper[data-popper-placement^="bottom"] .rdx__arrow,
+.rdx__popper[data-popper-placement^="bottom"] .rdx__arrow::before {
     border-top: none;
     border-bottom-color: #347deb;
 }
 
-.rdx__popper[data-popper-placement^="top"] .rdx__arrow, .rdx__popper[data-popper-placement^="top"] .rdx__arrow::before {
+.rdx__popper[data-popper-placement^="top"] .rdx__arrow,
+.rdx__popper[data-popper-placement^="top"] .rdx__arrow::before {
     border-bottom: none;
     border-top-color: #ffffff;
 }

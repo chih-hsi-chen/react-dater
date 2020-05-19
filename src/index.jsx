@@ -13,7 +13,9 @@ import {
 	getHours,
 	getMinutes,
 	isBefore,
+	determineMinMax,
 } from './helpers/date-utils';
+import { PRESELECT, STARTSELECT, ENDSELECT } from './helpers/constant';
 import './stylesheets/DatePicker.css';
 
 const WrappedCalendar = onClickOutside(Calendar);
@@ -39,6 +41,8 @@ export default class DatePicker extends React.Component {
 		selectTimeRange: PropTypes.bool,
 		minDate: PropTypes.instanceOf(Date),
 		maxDate: PropTypes.instanceOf(Date),
+		startDate: PropTypes.instanceOf(Date),
+		endDate: PropTypes.instanceOf(Date),
 		skipOverflowCheck: PropTypes.bool,
 	};
 
@@ -54,11 +58,26 @@ export default class DatePicker extends React.Component {
 		super(props);
 
 		this.state = this.getInitialState();
+		this.inputTimeout = null;
 	}
 
 	getInitialState = () => {
-		const { minDate, maxDate, selected } = this.props;
+		const {
+			minDate,
+			maxDate,
+			selectDateRange,
+			selected,
+			startDate,
+			endDate,
+		} = this.props;
 		let initialDateToSee = selected || newDate();
+		const initialDateStart = startDate || null;
+		const initialDateEnd = endDate || null;
+
+		if (selectDateRange) {
+			initialDateToSee =
+				initialDateStart || initialDateEnd || initialDateToSee;
+		}
 
 		if (!this.props.skipOverflowCheck) {
 			if (minDate && isBefore(initialDateToSee, minDate)) {
@@ -72,9 +91,32 @@ export default class DatePicker extends React.Component {
 			open: false,
 			inputValue: null,
 			focused: false,
+			selectState: initialDateStart
+				? STARTSELECT
+				: initialDateEnd
+				? ENDSELECT
+				: PRESELECT, // for date range
 			selectedDate: initialDateToSee,
 			viewDate: initialDateToSee,
+			selectedDateStart: initialDateStart,
+			selectedDateEnd: initialDateEnd,
+			hoveringDate: null,
 		};
+	};
+
+	getResetView = () => {
+		if (this.props.selectDateRange) {
+			const { selectedDateStart, selectedDateEnd, viewDate } = this.state;
+			return selectedDateStart || selectedDateEnd || viewDate;
+		}
+		return this.state.selectedDate;
+	};
+
+	clearTimer = () => {
+		if (typeof this.inputTimeout === 'number') {
+			window.clearTimeout(this.inputTimeout);
+			this.inputTimeout = null;
+		}
 	};
 
 	isCalendarOpen = () => {
@@ -83,19 +125,19 @@ export default class DatePicker extends React.Component {
 
 	/**
 	 * @param {Boolean} nextOpenState - next calendar popper open state
-	 * @param {Boolean} isResetView - if true, represent there is no selection happend
+	 * @param {Boolean} isResetView - if true, represent there is no selection happend or range select is interrupted
 	 */
-	setOpen = (nextOpenState, isResetView) => {
+	setOpen = (nextOpenState, isResetView, resetViewDate) => {
 		this.setState((prevState) => {
 			const BaseUpdate = {
 				open: nextOpenState,
 			};
-			if (nextOpenState || !isResetView) return BaseUpdate;
-
-			return {
-				...BaseUpdate,
-				viewDate: prevState.selectedDate,
-			};
+			if (isResetView)
+				return {
+					...BaseUpdate,
+					viewDate: resetViewDate,
+				};
+			return BaseUpdate;
 		});
 	};
 
@@ -125,6 +167,44 @@ export default class DatePicker extends React.Component {
 		this.props.onChange(changedDate, event);
 	};
 
+	setRangeSelected = ({ start, end } = {}, event, keepInput) => {
+		const nextUpdate = {
+			selectState: PRESELECT,
+			selectedDateStart: start || this.state.selectedDateStart,
+			selectedDateEnd: end || this.state.selectedDateEnd,
+		};
+
+		if (keepInput) {
+			if (start && end) {
+				[
+					nextUpdate.selectedDateStart,
+					nextUpdate.selectedDateEnd,
+				] = determineMinMax(start, end);
+				nextUpdate.inputValue = null;
+			}
+		} else {
+			nextUpdate.inputValue = null;
+			if (this.state.selectState === PRESELECT) {
+				nextUpdate.selectState = STARTSELECT;
+				if (this.state.selectedDateStart !== null)
+					nextUpdate.selectedDateEnd = null;
+			} else {
+				[
+					nextUpdate.selectedDateStart,
+					nextUpdate.selectedDateEnd,
+				] = determineMinMax(
+					nextUpdate.selectedDateStart,
+					nextUpdate.selectedDateEnd
+				);
+				nextUpdate.viewDate = nextUpdate.selectedDateStart;
+			}
+		}
+		if (nextUpdate.selectState === PRESELECT) {
+			nextUpdate.hoveringDate = null;
+		}
+		this.setState(nextUpdate);
+	};
+
 	setViewDate = (date) => {
 		this.setState({
 			viewDate: date,
@@ -146,25 +226,74 @@ export default class DatePicker extends React.Component {
 		// this.setState({ focused: false });
 	};
 
+	inputChangeCallBack = (event) => {
+		const { dateFormatInput, locale } = this.props;
+		const targetVal = event.target.value;
+		let parsedDate;
+
+		if (this.props.selectDateRange) {
+			const [start, end] = targetVal.split('to').map((d) => d.trim());
+			const parsedStart = parseDate(start, dateFormatInput, locale);
+			const parsedEnd = parseDate(end, dateFormatInput, locale);
+
+			this.setRangeSelected(
+				{ start: parsedStart, end: parsedEnd },
+				event,
+				true
+			);
+		} else {
+			parsedDate = parseDate(targetVal, dateFormatInput, locale);
+			if (parsedDate) this.setSelected(parsedDate, event, true);
+		}
+	};
+
 	// text input change
 	handleInputChange = (...args) => {
-		const event = args[0];
-		const parsedDate = parseDate(
-			event.target.value,
-			this.props.dateFormatInput
+		const event = args[0].nativeEvent;
+
+		this.clearTimer();
+		this.inputTimeout = window.setTimeout(
+			this.inputChangeCallBack,
+			2000,
+			event
 		);
 
 		this.setState({
 			inputValue: event.target.value,
 		});
-
-		if (parsedDate) this.setSelected(parsedDate, event, true);
 	};
 
 	handleSelect = (date, event) => {
-		this.setSelected(date, event, false);
+		const { selectState } = this.state;
+		const { selectDateRange } = this.props;
 
-		this.setOpen(false, false);
+		this.clearTimer();
+
+		if (selectDateRange) {
+			switch (selectState) {
+				case PRESELECT:
+					this.setRangeSelected({ start: date }, event, false);
+					break;
+				case STARTSELECT:
+					this.setOpen(false, false);
+					this.setRangeSelected({ end: date }, event, false);
+					break;
+				case ENDSELECT:
+					this.setOpen(false, false);
+					this.setRangeSelected({ start: date }, event, false);
+					break;
+				default:
+					break;
+			}
+		} else {
+			this.setOpen(false, false);
+			this.setSelected(date, event, false);
+		}
+	};
+
+	handleDayHover = (day) => {
+		if (this.state.selectState !== PRESELECT)
+			this.setState({ hoveringDate: day });
 	};
 
 	handleTimeSelect = (time) => {
@@ -182,7 +311,30 @@ export default class DatePicker extends React.Component {
 	};
 
 	handleCalendarClickOutside = (e) => {
-		if (e.target !== this.input) this.setOpen(false, true);
+		if (e.target !== this.input) {
+			let resetViewDate;
+			if (this.props.selectDateRange) {
+				const {
+					selectedDateStart,
+					selectedDateEnd,
+					viewDate,
+				} = this.state;
+				resetViewDate =
+					selectedDateStart || selectedDateEnd || viewDate;
+			} else resetViewDate = this.state.selectedDate;
+			this.setOpen(false, true, resetViewDate);
+		}
+	};
+
+	getDateRangeFormat = () => {
+		const { dateFormatInput, locale } = this.props;
+		const { selectedDateStart, selectedDateEnd } = this.state;
+		const startStr =
+			formatDate(selectedDateStart, dateFormatInput, locale) || '...';
+		const endStr =
+			formatDate(selectedDateEnd, dateFormatInput, locale) || '...';
+
+		return `${startStr} to ${endStr}`;
 	};
 
 	renderCalendar = () => {
@@ -211,9 +363,12 @@ export default class DatePicker extends React.Component {
 		const inputValue =
 			typeof this.state.inputValue === 'string'
 				? this.state.inputValue
+				: this.props.selectDateRange
+				? this.getDateRangeFormat()
 				: formatDate(
 						this.state.selectedDate,
-						this.props.dateFormatInput
+						this.props.dateFormatInput,
+						this.props.locale
 				  );
 
 		const InputClassName = cname(
@@ -238,15 +393,27 @@ export default class DatePicker extends React.Component {
 
 	render() {
 		const calendar = this.renderCalendar();
+		const {
+			selectedDate,
+			selectedDateStart,
+			selectedDateEnd,
+			viewDate,
+			hoveringDate,
+		} = this.state;
 
 		return (
 			<RDXContext.Provider
 				value={{
+					selectDateRange: this.props.selectDateRange,
 					locale: this.props.locale,
-					selected: this.state.selectedDate,
+					selected: selectedDate,
+					viewed: viewDate,
+					hoveringDate: hoveringDate,
+					startDate: selectedDateStart,
+					endDate: selectedDateEnd,
 					minDate: this.props.minDate,
-					viewed: this.state.viewDate,
 					onDaySelect: this.handleSelect,
+					onDayHover: this.handleDayHover,
 					onTimeSelect: this.handleTimeSelect,
 				}}
 			>
