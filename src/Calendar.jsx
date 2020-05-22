@@ -75,6 +75,14 @@ class Calendar extends Component {
 		return newDate();
 	};
 
+	getFooterClassName = () => {
+		const { selectTimeRange } = this.props;
+
+		return cname('rdx__time-footer', {
+			'rdx__time-footer--range': selectTimeRange,
+		});
+	};
+
 	decreaseMonth = () => {
 		this.props.onChangeView(subMonths(this.props.viewed, 1));
 	};
@@ -263,9 +271,13 @@ class Calendar extends Component {
 
 	renderFooter = () => {
 		const { timeCollapse } = this.state;
+		const { selectTime, selectTimeRange } = this.props;
+
+		if (!selectTime && !selectTimeRange) return;
+
 		return (
 			<div
-				className='rdx__time-footer'
+				className={this.getFooterClassName()}
 				data-collapse={this.state.timeCollapse}
 			>
 				<div
@@ -285,6 +297,7 @@ class Calendar extends Component {
 					format={this.props.timeFormat}
 					intervals={this.props.intervals}
 					setTimeLayerOpen={this.setTimeLayerOpen}
+					selectTimeRange={this.props.selectTimeRange}
 				/>
 			</div>
 		);
@@ -295,12 +308,13 @@ class Calendar extends Component {
 			<div ref={this.containerRef}>
 				<CalendarContainer
 					className={cname('rdx', {
-						'rdx--select-time': this.props.selectTime,
+						'rdx--select-time':
+							this.props.selectTime || this.props.selectTimeRange,
 					})}
 				>
 					{this.renderMonths()}
 					{this.props.children}
-					{this.props.selectTime && this.renderFooter()}
+					{this.renderFooter()}
 				</CalendarContainer>
 			</div>
 		);

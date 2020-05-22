@@ -6,8 +6,8 @@
 	"dependencies": {
 		"react": "file:../node_modules/react",
 		"react-app-polyfill": "file:../node_modules/react-app-polyfill",
-		"react-dater": "file:..",
 		"react-datepicker": "^2.14.1",
+		"react-dater": "file:..",
 		"react-dom": "file:../node_modules/react-dom",
 		"react-scripts": "file:../node_modules/react-scripts"
 	},
@@ -23,6 +23,7 @@
 	"browserslist": [
 		">0.2%",
 		"not dead",
-		"not op_mini all"
+		"not op_mini all",
+		"ie > 9"
 	]
 }

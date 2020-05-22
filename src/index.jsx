@@ -12,6 +12,8 @@ import {
 	setTime,
 	getHours,
 	getMinutes,
+	getStartOfDay,
+	getEndOfDay,
 	isBefore,
 	determineMinMax,
 } from './helpers/date-utils';
@@ -34,7 +36,10 @@ export default class DatePicker extends React.Component {
 		readOnly: PropTypes.bool,
 		inputElement: PropTypes.element,
 		onChange: PropTypes.func,
-		selected: PropTypes.instanceOf(Date),
+		selected: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.instanceOf(Date),
+		]),
 		showMonthYearSeparate: PropTypes.bool,
 		selectTime: PropTypes.bool,
 		selectDateRange: PropTypes.bool,
@@ -70,9 +75,10 @@ export default class DatePicker extends React.Component {
 			startDate,
 			endDate,
 		} = this.props;
-		let initialDateToSee = selected || newDate();
+		const initialSingleSelected = newDate(selected);
 		const initialDateStart = startDate || null;
 		const initialDateEnd = endDate || null;
+		let initialDateToSee = initialSingleSelected;
 
 		if (selectDateRange) {
 			initialDateToSee =
@@ -96,10 +102,12 @@ export default class DatePicker extends React.Component {
 				: initialDateEnd
 				? ENDSELECT
 				: PRESELECT, // for date range
-			selectedDate: initialDateToSee,
+			selectedDate: initialSingleSelected,
 			viewDate: initialDateToSee,
 			selectedDateStart: initialDateStart,
 			selectedDateEnd: initialDateEnd,
+			selectedTimeStart: getStartOfDay(newDate()),
+			selectedTimeEnd: getEndOfDay(newDate()),
 			hoveringDate: null,
 		};
 	};
@@ -296,18 +304,27 @@ export default class DatePicker extends React.Component {
 			this.setState({ hoveringDate: day });
 	};
 
-	handleTimeSelect = (time) => {
+	handleTimeSelect = (time, tabType = 'START') => {
 		const { selectedDate: selected } = this.state;
-
 		const changedDate = setTime(selected, {
 			hour: getHours(time),
 			min: getMinutes(time),
 		});
-
-		this.setState({
-			selectedDate: changedDate,
+		const nextUpdate = {
 			inputValue: null,
-		});
+		};
+
+		if (this.props.selectTimeRange) {
+			if (tabType === 'START') {
+				nextUpdate.selectedTimeStart = changedDate;
+			} else {
+				nextUpdate.selectedTimeEnd = changedDate;
+			}
+		} else {
+			nextUpdate.selectedDate = changedDate;
+		}
+
+		this.setState(nextUpdate);
 	};
 
 	handleCalendarClickOutside = (e) => {
@@ -327,12 +344,27 @@ export default class DatePicker extends React.Component {
 	};
 
 	getDateRangeFormat = () => {
-		const { dateFormatInput, locale } = this.props;
-		const { selectedDateStart, selectedDateEnd } = this.state;
-		const startStr =
-			formatDate(selectedDateStart, dateFormatInput, locale) || '...';
-		const endStr =
-			formatDate(selectedDateEnd, dateFormatInput, locale) || '...';
+		const { dateFormatInput, locale, selectTime } = this.props;
+		let {
+			selectedDateStart: ds,
+			selectedDateEnd: de,
+			selectedDate: dd,
+			selectedTimeStart: ts,
+			selectedTimeEnd: te,
+		} = this.state;
+
+		if (selectTime) {
+			const hour = getHours(dd);
+			const min = getMinutes(dd);
+			ds = setTime(ds, { hour, min });
+			de = setTime(de, { hour, min });
+		} else {
+			ds = setTime(ds, { hour: getHours(ts), min: getMinutes(ts) });
+			de = setTime(de, { hour: getHours(te), min: getMinutes(te) });
+		}
+
+		const startStr = formatDate(ds, dateFormatInput, locale) || '...';
+		const endStr = formatDate(de, dateFormatInput, locale) || '...';
 
 		return `${startStr} to ${endStr}`;
 	};
@@ -397,6 +429,8 @@ export default class DatePicker extends React.Component {
 			selectedDate,
 			selectedDateStart,
 			selectedDateEnd,
+			selectedTimeStart,
+			selectedTimeEnd,
 			viewDate,
 			hoveringDate,
 		} = this.state;
@@ -411,6 +445,8 @@ export default class DatePicker extends React.Component {
 					hoveringDate: hoveringDate,
 					startDate: selectedDateStart,
 					endDate: selectedDateEnd,
+					startTime: selectedTimeStart,
+					endTime: selectedTimeEnd,
 					minDate: this.props.minDate,
 					onDaySelect: this.handleSelect,
 					onDayHover: this.handleDayHover,

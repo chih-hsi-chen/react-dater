@@ -9,7 +9,7 @@ import {
 import RDXContext, { connect } from './helpers/ContextConfig';
 import cname from 'classnames';
 
-function select() {
+function useSelect() {
 	const {
 		minDate,
 		selected,
@@ -110,4 +110,4 @@ Day.propTypes = {
 	onDaySelect: PropTypes.func,
 };
 
-export default connect(Day, select);
+export default connect(Day, useSelect);

@@ -83,11 +83,8 @@ class Example extends Component {
 
 PopperJS can support modern versions of Chrome, Firefox, Safari and Edge. However, it cannot directly support IE11 or IE9. Therefore, we can add some polyfills to make it work without errors.
 
-There are two solutions to add polyfills:
-
-### Create-React-App
-
-If you use Create-React-App and want to support IE11 or IE9, you can use [react-app-polyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill)
+Here we assume you use Create-React-App to create your project.
+You can follow the official guidelines to use [react-app-polyfill](https://github.com/facebook/create-react-app/tree/master/packages/react-app-polyfill)
 
 **IE11**
 
@@ -106,13 +103,9 @@ import 'react-app-polyfill/stable';
 import 'react-app-polyfill/ie9';
 ```
 
-### Add script tag
-
-Add following script tag before your bundled js files:
-
-```html
-<script src="https://polyfill.io/v3/polyfill.min.js?features=Array.prototype.find,Promise,Object.assign"></script>
-```
+> For IE9, we need to add polyfill for *classList* because it isn't supported by IE9.
+Add the following source to a new script tag:
+https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js
 
 ## License
 

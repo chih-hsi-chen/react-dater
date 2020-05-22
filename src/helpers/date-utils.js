@@ -121,6 +121,8 @@ export const getWeekdayNameInLocale = (date, locale) => {
 };
 
 export const setTime = (date, { hour = 0, min = 0 }) => {
+	if (!isValid(date)) return null;
+	if (typeof hour !== 'number' || typeof min !== 'number') return null;
 	return setHours(setMinutes(date, min), hour);
 };
 
@@ -169,9 +171,29 @@ export function isDayInRange(day, dateLeft, dateRight) {
 	}
 	return valid;
 }
+export function isTimeBefore(time, timeToComp) {
+	const timeHour = getHours(time);
+	const timeMin = getMinutes(time);
+	const compHour = getHours(timeToComp);
+	const compMin = getMinutes(timeToComp);
+	return timeHour === compHour ? timeMin < compMin : timeHour < compHour;
+}
+export function isTimeAfter(time, timeToComp) {
+	const timeHour = getHours(time);
+	const timeMin = getMinutes(time);
+	const compHour = getHours(timeToComp);
+	const compMin = getMinutes(timeToComp);
+	return timeHour === compHour ? timeMin > compMin : timeHour > compHour;
+}
 
 // Date getters
-export { getHours, getMinutes, getDate, startOfDay as getStartOfDay };
+export {
+	getHours,
+	getMinutes,
+	getDate,
+	startOfDay as getStartOfDay,
+	endOfDay as getEndOfDay,
+};
 
 // addition operations
 export { addDays, addWeeks, addMonths, addYears };
