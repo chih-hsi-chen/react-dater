@@ -5,6 +5,7 @@ import {
 	checkEqual,
 	isSameMonth,
 	isDayInRange,
+	isDayDisabled,
 } from './helpers/date-utils';
 import RDXContext, { connect } from './helpers/ContextConfig';
 import cname from 'classnames';
@@ -12,6 +13,7 @@ import cname from 'classnames';
 function useSelect() {
 	const {
 		minDate,
+		maxDate,
 		selected,
 		viewed,
 		hoveringDate,
@@ -20,10 +22,13 @@ function useSelect() {
 		startDate,
 		endDate,
 		selectDateRange,
+		includeDates,
+		excludeDates,
 	} = useContext(RDXContext);
 
 	return {
 		minDate,
+		maxDate,
 		selected,
 		viewed,
 		hoveringDate,
@@ -32,6 +37,8 @@ function useSelect() {
 		startDate,
 		endDate,
 		selectDateRange,
+		includeDates,
+		excludeDates,
 	};
 }
 
@@ -78,6 +85,9 @@ const Day = React.memo((props) => {
 
 		return false;
 	}
+	function isDisabled() {
+		return isDayDisabled(day, props);
+	}
 	function handleMouseEnter() {
 		onDayHover(day);
 	}
@@ -89,6 +99,7 @@ const Day = React.memo((props) => {
 			'rdx__day--range-end': isRangeEnd(),
 			'rdx__day--in-range': isInRange(),
 			'rdx__day--out-month': !isSameMonth(day, viewed),
+			'rdx__day--disabled': isDisabled(),
 		});
 	};
 

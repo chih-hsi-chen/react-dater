@@ -132,11 +132,18 @@
     background-color: #347deb;
     color: #fff;
 }
-
 .rdx__day--selected:hover,
 .rdx__day--range-start:hover,
 .rdx__day--range-end:hover {
     background-color: #3174da;
+}
+.rdx__day--disabled {
+    color: #aeaeae;
+    cursor: default;
+    pointer-events: none;
+}
+.rdx__day--disabled:hover {
+    background-color: transparent;
 }
 
 .rdx__popper[data-popper-reference-hidden="true"] {
@@ -306,5 +313,5 @@
     pointer-events: none;
 }
 .rdx__timeListItem--disabled:hover {
-    /* background-color: transparent; */
+    background-color: transparent;
 }

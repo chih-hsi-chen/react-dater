@@ -150,6 +150,16 @@ export function isMonthNextDisabled(day, { maxDate } = {}) {
 	return maxDate && differenceInCalendarMonths(nextMonth, maxDate) > 0;
 }
 
+export function isDayDisabled(day, info = {}) {
+	const { minDate, maxDate, includeDates, excludeDates } = info;
+
+	return (
+		((minDate || maxDate) && !isDayInRange(day, minDate, maxDate)) ||
+		(includeDates && !includeDates.some((inc) => isSameDay(day, inc))) ||
+		(excludeDates && excludeDates.some((exc) => isSameDay(day, exc)))
+	);
+}
+
 export function determineMinMax(dateLeft, dateRight) {
 	if (differenceInCalendarDays(dateLeft, dateRight) > 0)
 		return [dateRight, dateLeft];
@@ -158,18 +168,25 @@ export function determineMinMax(dateLeft, dateRight) {
 }
 
 export function isDayInRange(day, dateLeft, dateRight) {
-	const [startDate, endDate] = determineMinMax(dateLeft, dateRight);
-	let valid;
+	if (!dateLeft || !dateRight) {
+		return (
+			(dateLeft && differenceInCalendarDays(day, dateLeft) >= 0) ||
+			(dateRight && differenceInCalendarDays(day, dateRight) <= 0)
+		);
+	} else {
+		const [min, max] = determineMinMax(dateLeft, dateRight);
+		let valid;
 
-	try {
-		valid = isWithinInterval(day, {
-			start: startOfDay(startDate),
-			end: endOfDay(endDate),
-		});
-	} catch (err) {
-		valid = false;
+		try {
+			valid = isWithinInterval(day, {
+				start: startOfDay(min),
+				end: endOfDay(max),
+			});
+		} catch (err) {
+			valid = false;
+		}
+		return valid;
 	}
-	return valid;
 }
 export function isTimeBefore(time, timeToComp) {
 	const timeHour = getHours(time);
